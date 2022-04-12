@@ -12,6 +12,14 @@ namespace SpaceApi.Data
         {
 
         }
-        DbSet<FileElement> EleFiles { get; set; }
+        public DbSet<FileElement> EleFiles { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<FileElement>()
+            .HasMany(d => d.ChidFiles)
+            .WithOne(d=>d.FatherDirectory)
+            .HasForeignKey(e => e.FatherDirectoryId)
+            .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }
