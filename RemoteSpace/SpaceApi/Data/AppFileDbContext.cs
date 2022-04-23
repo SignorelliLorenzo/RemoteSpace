@@ -8,7 +8,7 @@ namespace SpaceApi.Data
 {
     public class AppFileDbContext:DbContext 
     {
-        public AppFileDbContext(DbContextOptions options):base(options)
+        public AppFileDbContext(DbContextOptions<AppFileDbContext> options):base(options)
         {
 
         }

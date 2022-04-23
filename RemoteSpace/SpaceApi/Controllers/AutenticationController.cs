@@ -16,12 +16,13 @@ using SpaceApi.Config;
 using Api_Pcto.Models.DTOS.Responses;
 using SpaceApi.Models.Communication.Request;
 using Api_Pcto.Config;
+using Microsoft.AspNetCore.Identity;
 
 namespace SpaceApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Autentication")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+   
     public class AuthenticationController : ControllerBase
     {
         private readonly UserManager<UserModel> _userManager;
@@ -37,7 +38,7 @@ namespace SpaceApi.Controllers
             this._jwtConfig = config.CurrentValue;
             this.userTokenManager = TokenManager;
         }
-
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("Register")]
         public async Task<ActionResult<UserRegistrationResponse>> Register(UserRegistrationRequest user)
         {
@@ -170,7 +171,7 @@ namespace SpaceApi.Controllers
                 Username = null
             };
         }
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("Delete")]
         public async Task<AuthResult> Delete(UserDeleteRequest req)
         {

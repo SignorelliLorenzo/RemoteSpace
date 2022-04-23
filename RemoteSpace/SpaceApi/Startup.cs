@@ -1,20 +1,26 @@
+
+using Api_Pcto.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Sqlite;
-using Microsoft.EntityFrameworkCore;
+using SpaceApi.Config;
 using SpaceApi.Data;
 using SpaceApi.Servizi;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SpaceApi
 {
@@ -30,11 +36,12 @@ namespace SpaceApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers();
             services.AddDbContext<AppFileDbContext>(options =>
                options.UseSqlite(
-                   Configuration.GetConnectionString("DefaultConnection")));
+                   Configuration.GetConnectionString("FileDb")));
             services.AddDbContext<MyTokenDbContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("Token")));
+                options.UseSqlite(Configuration.GetConnectionString("TokenDb")));
             services.AddScoped<IUserManager, UserManager>();
             //
 
@@ -73,7 +80,7 @@ namespace SpaceApi
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Api Telecamere", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "SpaceApi", Version = "v1" });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,

@@ -1,4 +1,6 @@
 ﻿using Api_Pcto.Models;
+using Microsoft.EntityFrameworkCore;
+using SpaceApi.Data;
 using SpaceApi.Models.Communication.Request;
 using SpaceApi.Models.Communication.Response;
 using System;
