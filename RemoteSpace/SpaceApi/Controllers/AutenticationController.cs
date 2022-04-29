@@ -41,7 +41,20 @@ namespace SpaceApi.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("Register")]
         public async Task<ActionResult<UserRegistrationResponse>> Register(UserRegistrationRequest user)
+
         {
+      
+            if (!_userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().Admin)
+            {
+                return new UserRegistrationResponse()
+                {
+                    Errors = new List<string>()
+                        {
+                            "Non sei un admin"
+                        },
+                    Success = false
+                };
+            }
             if (ModelState.IsValid)
             {
                 var ExistingUser = await _userManager.FindByEmailAsync(user.Email);
