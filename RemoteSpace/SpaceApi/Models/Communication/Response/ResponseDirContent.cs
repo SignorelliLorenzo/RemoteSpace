@@ -10,13 +10,10 @@ namespace SpaceApi.Models
         public bool Status { get; set; }
         public List<string> Errors { get; set; }
     }
-    public class ResponseDirContent : ResponseModel
+    public class ResponseFiles : ResponseModel
     {
         public List<FileElement> Content { get; set; }
     }
-    public class FileResponse : ResponseModel
-    {
-        public FileElement File { get; set; }
-    }
+
    
 }

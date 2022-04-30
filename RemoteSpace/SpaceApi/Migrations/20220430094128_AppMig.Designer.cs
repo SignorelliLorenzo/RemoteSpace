@@ -9,8 +9,8 @@ using SpaceApi.Data;
 namespace SpaceApi.Migrations
 {
     [DbContext(typeof(AppFileDbContext))]
-    [Migration("20220412094915_BaseMig")]
-    partial class BaseMig
+    [Migration("20220430094128_AppMig")]
+    partial class AppMig
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,9 +26,6 @@ namespace SpaceApi.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
-
-                    b.Property<int?>("FatherDirectoryId")
-                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsDirectory")
                         .HasColumnType("INTEGER");
@@ -53,27 +50,10 @@ namespace SpaceApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FatherDirectoryId");
-
-                    b.HasIndex("Name", "Owner", "FatherDirectoryId", "IsDirectory")
+                    b.HasIndex("Path", "IsDirectory", "Owner")
                         .IsUnique();
 
                     b.ToTable("EleFiles");
-                });
-
-            modelBuilder.Entity("SpaceApi.FileElement", b =>
-                {
-                    b.HasOne("SpaceApi.FileElement", "FatherDirectory")
-                        .WithMany("ChidFiles")
-                        .HasForeignKey("FatherDirectoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("FatherDirectory");
-                });
-
-            modelBuilder.Entity("SpaceApi.FileElement", b =>
-                {
-                    b.Navigation("ChidFiles");
                 });
 #pragma warning restore 612, 618
         }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SpaceApi
 {
-    [Index(new string[] { nameof(Name), nameof(Owner), nameof(FatherDirectoryId), nameof(IsDirectory) }, IsUnique =true)]
+    [Index(new string[] { nameof(Path), /*nameof(FatherDirectoryId),*/ nameof(IsDirectory),nameof(Owner) }, IsUnique =true)]
     public class FileElement
     {
         [Key]
@@ -21,8 +21,8 @@ namespace SpaceApi
         public string Description { get; set; }
         public bool Shared { get; set; }
         public bool IsDirectory { get; set; }
-        public int? FatherDirectoryId { get; set; }
-        public virtual FileElement FatherDirectory { get; set; }
-        public virtual ICollection<FileElement> ChidFiles { get; set; }
+        //public int? FatherDirectoryId { get; set; }
+        //public virtual FileElement FatherDirectory { get; set; }
+        //public virtual ICollection<FileElement> ChidFiles { get; set; }
     }
 }

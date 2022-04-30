@@ -3,43 +3,63 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpaceApi;
 using SpaceApi.Data;
+using SpaceApi.Models;
+using System.IO;
+using Microsoft.AspNetCore.Identity;
+using Api_Pcto.Models;
 
 namespace SpaceApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class MainController : ControllerBase
     {
         private readonly AppFileDbContext _context;
-
-        public MainController(AppFileDbContext context)
+        private readonly UserManager<UserModel> _userManager;
+        public MainController(AppFileDbContext context, UserManager<UserModel> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        // GET: api/Main
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<FileElement>>> GetEleFiles()
+       
+     
+
+       
+        [HttpGet("{path}")]
+        public async Task<ResponseFiles> GetFileElement(string path)
         {
-            return await _context.EleFiles.ToListAsync();
+            
+            var basedir = Environment.GetEnvironmentVariable("MainPath")+"\\"+ _userManager.GetUserName(User).Replace('.','-'); 
+            if (!path.StartsWith('\\'))
+            {
+                basedir = basedir + "\\";
+            }
+            path = basedir + path.Trim();
+            
+            if(!System.IO.File.Exists(path))
+            {
+                if (!Regex.Match(path, @"^(?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w]+\\)*\w([\w.])+$").Success)
+                {
+                    return new ResponseFiles() { Errors = new List<string>() { "Path format not valid ES: folder\\file.ext" }, Status = false, Content = null };
+                }
+                return new ResponseFiles() { Errors = new List<string>() { "NotFound" }, Status = false, Content = null };
+            }
+            if(System.IO.Directory.Exists(path))
+            {
+                System.IO.Directory.GetFiles();
+            }
+            System.IO.File file = new System.IO.File("");
+            return new ResponseFiles() { Errors = new List<string>(), Status = true, Content = null }; ;
         }
-
-        //// GET: api/Main/5
-        //[HttpGet("{path}")]
-        //public async Task<ActionResult<FileElement>> GetFileElement(string path)
-        //{
-        //    if(!Regex.Match(path, @"^(?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w]+\\)*\w([\w.])+$").Success)
-        //    {
-
-        //    }
-
-        //    return fileElement;
-        //}
 
         // PUT: api/Main/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

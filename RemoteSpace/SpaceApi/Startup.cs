@@ -18,6 +18,7 @@ using SpaceApi.Servizi;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +37,7 @@ namespace SpaceApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Environment.SetEnvironmentVariable("MainPath", Directory.GetCurrentDirectory()+"\\MainDir");
             services.AddControllers();
             services.AddDbContext<AppFileDbContext>(options =>
                options.UseSqlite(
@@ -74,7 +76,7 @@ namespace SpaceApi
 
             services.AddDefaultIdentity<UserModel>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<MyTokenDbContext>();
-
+            
             services.AddScoped<JwtSecurityTokenHandler, JwtSecurityTokenHandler>();
             //
 
