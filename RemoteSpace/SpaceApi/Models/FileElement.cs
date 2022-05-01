@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SpaceApi.Models.Communication.Request;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,15 +9,20 @@ using System.Threading.Tasks;
 
 namespace SpaceApi
 {
-    [Index(new string[] { nameof(Path), /*nameof(FatherDirectoryId),*/ nameof(IsDirectory),nameof(Owner) }, IsUnique =true)]
+    [Index(new string[] { nameof(Path), nameof(Name), /*nameof(FatherDirectoryId), nameof(IsDirectory),*/nameof(Owner) }, IsUnique =true)]
     public class FileElement
     {
         [Key]
         public int Id { get; set; }
+        [Required]
         public string Name { get; set; }
+        [Required]
         public decimal Weight { get; set; }
+        [Required]
         public string Owner { get; set; }
+        [Required]
         public DateTime UploadDate { get; set; }
+        [Required]
         public string Path { get; set; }
         public string Description { get; set; }
         public bool Shared { get; set; }
@@ -24,5 +30,22 @@ namespace SpaceApi
         //public int? FatherDirectoryId { get; set; }
         //public virtual FileElement FatherDirectory { get; set; }
         //public virtual ICollection<FileElement> ChidFiles { get; set; }
+        public FileElement()
+        {
+
+        }
+        public FileElement(FileElementSend filesent,int weight)
+        {
+           
+            Name=filesent.Name;
+            Weight=weight;
+            Owner=filesent.Owner;
+            UploadDate=DateTime.Now;
+            Path=filesent.Path;
+            Description=filesent.Description;
+            Shared=filesent.Shared;
+            IsDirectory=filesent.IsDirectory;
+
+        }
     }
 }

@@ -29,12 +29,15 @@ namespace SpaceApi.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Owner")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Path")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("Shared")
@@ -48,7 +51,7 @@ namespace SpaceApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Path", "IsDirectory", "Owner")
+                    b.HasIndex("Path", "Name", "Owner")
                         .IsUnique();
 
                     b.ToTable("EleFiles");

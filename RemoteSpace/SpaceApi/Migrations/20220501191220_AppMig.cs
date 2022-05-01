@@ -13,11 +13,11 @@ namespace SpaceApi.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     Weight = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Owner = table.Column<string>(type: "TEXT", nullable: true),
+                    Owner = table.Column<string>(type: "TEXT", nullable: false),
                     UploadDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Path = table.Column<string>(type: "TEXT", nullable: true),
+                    Path = table.Column<string>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
                     Shared = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsDirectory = table.Column<bool>(type: "INTEGER", nullable: false)
@@ -28,9 +28,9 @@ namespace SpaceApi.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_EleFiles_Path_IsDirectory_Owner",
+                name: "IX_EleFiles_Path_Name_Owner",
                 table: "EleFiles",
-                columns: new[] { "Path", "IsDirectory", "Owner" },
+                columns: new[] { "Path", "Name", "Owner" },
                 unique: true);
         }
 

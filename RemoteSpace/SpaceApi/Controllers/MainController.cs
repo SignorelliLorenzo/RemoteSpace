@@ -14,12 +14,13 @@ using SpaceApi.Models;
 using System.IO;
 using Microsoft.AspNetCore.Identity;
 using Api_Pcto.Models;
+using SpaceApi.Models.Communication.Request;
 
 namespace SpaceApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    
     public class MainController : ControllerBase
     {
         private readonly AppFileDbContext _context;
@@ -35,72 +36,98 @@ namespace SpaceApi.Controllers
 
        
         [HttpGet("{path}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ResponseFiles> GetFileElement(string path)
         {
             
-            var basedir = Environment.GetEnvironmentVariable("MainPath")+"\\"+ _userManager.GetUserName(User).Replace('.','-'); 
+            var basedir = Environment.GetEnvironmentVariable("MainPath")+"\\"+ _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName; 
             if (!path.StartsWith('\\'))
             {
-                basedir = basedir + "\\";
+                path = "\\"+path ;
             }
-            path = basedir + path.Trim();
+            var completepath = basedir + path.Trim();
             
-            if(!System.IO.File.Exists(path))
+            if(!System.IO.File.Exists(completepath))
             {
-                if (!Regex.Match(path, @"^(?:[a-zA-Z]\:|\\\\[\w\.]+\\[\w.$]+)\\(?:[\w]+\\)*\w([\w.])+$").Success)
-                {
-                    return new ResponseFiles() { Errors = new List<string>() { "Path format not valid ES: folder\\file.ext" }, Status = false, Content = null };
-                }
+                
                 return new ResponseFiles() { Errors = new List<string>() { "NotFound" }, Status = false, Content = null };
             }
-            if(System.IO.Directory.Exists(path))
+            List<string> elefiles;
+            if(System.IO.Directory.Exists(completepath))
             {
-                System.IO.Directory.GetFiles();
+
+                return new ResponseFiles() { Errors = null, Status = true, Content = _context.EleFiles.Where(x => x.Path == path).ToList() };
             }
-            System.IO.File file = new System.IO.File("");
-            return new ResponseFiles() { Errors = new List<string>(), Status = true, Content = null }; ;
+            return new ResponseFiles() { Errors = new List<string>{"IsAFile" }, Status = true, Content = _context.EleFiles.Where(x => x.Path == path.Substring(0,path.IndexOf(Path.GetDirectoryName(completepath)))).ToList() }; 
+           
+  
         }
 
-        // PUT: api/Main/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutFileElement(int id, FileElement fileElement)
-        {
-            if (id != fileElement.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(fileElement).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FileElementExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
+        
 
         // POST: api/Main
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<FileElement>> PostFileElement(FileElement fileElement)
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ResponseFiles> AddFileElement(FileElementAddRequest fileElement)
         {
-            _context.EleFiles.Add(fileElement);
-            await _context.SaveChangesAsync();
+            var CompleteFile = new FileElement(fileElement.FileInfo, fileElement.Content.Count());
+            _context.EleFiles.Add(CompleteFile);
+            try
+            {
 
-            return CreatedAtAction("GetFileElement", new { id = fileElement.Id }, fileElement);
+                _context.SaveChanges();
+            }
+            catch(Exception ex)
+            {
+                return new ResponseFiles() { Errors = new List<string>() { "FileInfoNotValid:" + ex.Message }, Status = false, Content = null };
+            }
+            var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
+            if (!System.IO.Directory.Exists(basedir))
+            {
+                Directory.CreateDirectory(basedir);
+            }
+            var completepath = basedir + "\\" + fileElement.FileInfo.Path + "\\" + fileElement.FileInfo.Name;
+            try
+            {
+                Path.GetFullPath(completepath);
+            }
+            catch
+            {
+                return new ResponseFiles() { Errors = new List<string>() { "PathNotValid" }, Status = false, Content = null };
+            }
+            if (System.IO.File.Exists(completepath))
+            {
+                return new ResponseFiles() { Errors = new List<string>() { "FileAlreadyExists" }, Status = false, Content = null };
+            }
+                       
+            if (fileElement.FileInfo.IsDirectory)
+            {
+                try
+                {
+                    Directory.CreateDirectory(completepath);
+                }
+                catch (IOException ex)
+                {
+                    return new ResponseFiles() { Errors = new List<string>() { "NomeGiàEsistente:"+ ex.Message}, Status = false, Content = null };
+                }
+                catch (Exception ex)
+                {
+                    return new ResponseFiles() { Errors = new List<string> { ex.Message }, Status = false, Content = null };
+                }
+                
+            }
+            else
+            {
+                
+                    var newfile = System.IO.File.Create(completepath);
+                
+                
+                newfile.Write(fileElement.Content);
+            }
+
+            return new ResponseFiles() { Errors = null, Status = true, Content = new List<FileElement> { CompleteFile } };
+
         }
 
         // DELETE: api/Main/5

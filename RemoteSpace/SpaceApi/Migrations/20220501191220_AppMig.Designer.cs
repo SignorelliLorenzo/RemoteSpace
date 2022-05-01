@@ -9,7 +9,7 @@ using SpaceApi.Data;
 namespace SpaceApi.Migrations
 {
     [DbContext(typeof(AppFileDbContext))]
-    [Migration("20220430094128_AppMig")]
+    [Migration("20220501191220_AppMig")]
     partial class AppMig
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,12 +31,15 @@ namespace SpaceApi.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Owner")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Path")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("Shared")
@@ -50,7 +53,7 @@ namespace SpaceApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Path", "IsDirectory", "Owner")
+                    b.HasIndex("Path", "Name", "Owner")
                         .IsUnique();
 
                     b.ToTable("EleFiles");
