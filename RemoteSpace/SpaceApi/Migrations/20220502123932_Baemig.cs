@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SpaceApi.Migrations
 {
-    public partial class AppMig : Migration
+    public partial class Baemig : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -28,9 +28,9 @@ namespace SpaceApi.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_EleFiles_Path_Name_Owner",
+                name: "IX_EleFiles_Path_Name",
                 table: "EleFiles",
-                columns: new[] { "Path", "Name", "Owner" },
+                columns: new[] { "Path", "Name" },
                 unique: true);
         }
 

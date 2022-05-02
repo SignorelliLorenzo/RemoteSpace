@@ -51,7 +51,7 @@ namespace SpaceApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Path", "Name", "Owner")
+                    b.HasIndex("Path", "Name")
                         .IsUnique();
 
                     b.ToTable("EleFiles");

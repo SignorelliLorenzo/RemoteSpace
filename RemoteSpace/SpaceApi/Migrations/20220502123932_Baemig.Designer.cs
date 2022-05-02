@@ -9,8 +9,8 @@ using SpaceApi.Data;
 namespace SpaceApi.Migrations
 {
     [DbContext(typeof(AppFileDbContext))]
-    [Migration("20220501191220_AppMig")]
-    partial class AppMig
+    [Migration("20220502123932_Baemig")]
+    partial class Baemig
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -53,7 +53,7 @@ namespace SpaceApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Path", "Name", "Owner")
+                    b.HasIndex("Path", "Name")
                         .IsUnique();
 
                     b.ToTable("EleFiles");
