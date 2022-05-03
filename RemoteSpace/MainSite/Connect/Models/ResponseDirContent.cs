@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SpaceApi.Models
+namespace MainSite.Connect.Models
 {
     public class ResponseModel
     {

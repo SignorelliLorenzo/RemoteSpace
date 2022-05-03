@@ -33,7 +33,7 @@ namespace SpaceApi.Controllers
 
         [HttpGet("{path}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ResponseFiles> GetFileElement(string path)
+        public async Task<ResponseFiles> GetDir(string path)
         {
             
             var basedir = Environment.GetEnvironmentVariable("MainPath")+"\\"+ _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName; 
@@ -58,6 +58,26 @@ namespace SpaceApi.Controllers
            
   
         }
+        [HttpGet("{path}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ResponseFile> GetFile(int id)
+        {
+
+            var fileElement = await _context.EleFiles.FindAsync(id);
+            if (fileElement == null)
+            {
+                return new ResponseFile() { Errors = { "NotFound" }, Status = false, Content=null };
+            }
+            var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
+            string CompletePath = basedir + "\\" + fileElement.Path + "\\" + fileElement.Name;
+            if(!System.IO.File.Exists(CompletePath))
+            {
+                _context.EleFiles.Remove(fileElement);
+                return new ResponseFile() { Errors = { "FileDoesNotExist" }, Status = false, Content = null };
+
+            }
+            return new ResponseFile() { Errors = null, Status = false, Content = System.IO.File.ReadAllBytes(CompletePath) };
+        }
         // POST: api/Main
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -65,15 +85,8 @@ namespace SpaceApi.Controllers
         public async Task<ResponseFiles> AddFileElement(FileElementAddRequest fileElement)
         {
             var CompleteFile = new FileElement(fileElement.FileInfo, fileElement.Content.Count());
-            try
-            {
-                _context.EleFiles.Add(CompleteFile);
-                _context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                return new ResponseFiles() { Errors = new List<string>() { "FileInfoNotValid:" + ex.Message }, Status = false, Content = null };
-            }
+            
+           
 
             var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
             if (!System.IO.Directory.Exists(basedir))
@@ -91,10 +104,14 @@ namespace SpaceApi.Controllers
             }
             if (System.IO.File.Exists(completepath))
             {
+                
+               
                 return new ResponseFiles() { Errors = new List<string>() { "FileAlreadyExists" }, Status = false, Content = null };
             }
             else if(Directory.Exists(completepath))
             {
+
+                
                 return new ResponseFiles() { Errors = new List<string>() { "DirAlreadyExists" }, Status = false, Content = null };
             }                       
             if (fileElement.FileInfo.IsDirectory)
@@ -105,22 +122,31 @@ namespace SpaceApi.Controllers
                 }
                 catch (IOException ex)
                 {
+
+                   
                     return new ResponseFiles() { Errors = new List<string>() { "NomeGiàEsistente:"+ ex.Message}, Status = false, Content = null };
                 }
                 catch (Exception ex)
                 {
+                   
                     return new ResponseFiles() { Errors = new List<string> { ex.Message }, Status = false, Content = null };
                 }
                 
             }
-            else
-            {
-                
-                    var newfile = System.IO.File.Create(completepath);
-                
-                
+             
+                var newfile = System.IO.File.Create(completepath);
                 newfile.Write(fileElement.Content);
                 newfile.Close();
+           
+            try
+            {
+                _context.SaveChanges();
+                _context.EleFiles.Add(CompleteFile);
+            }
+            catch (Exception ex)
+            {
+                System.IO.File.Delete(completepath);
+                return new ResponseFiles() { Errors = new List<string>() { "FileInfoNotValid:" + ex.Message }, Status = false, Content = null };
             }
             
             return new ResponseFiles() { Errors = null, Status = true, Content = new List<FileElement> { CompleteFile } };
@@ -129,6 +155,7 @@ namespace SpaceApi.Controllers
 
         // DELETE: api/Main/5
         [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ResponseModel> DeleteFileElement(int id)
         {
             var fileElement = await _context.EleFiles.FindAsync(id);
