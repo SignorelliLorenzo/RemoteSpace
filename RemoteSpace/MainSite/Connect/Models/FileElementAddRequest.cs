@@ -1,4 +1,6 @@
-﻿namespace MainSite.Connect.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MainSite.Connect.Models
 {
     public class FileElementAddRequest 
     {
@@ -7,6 +9,7 @@
     }
     public class FileElementSend
     {
+        [Required]
         public string Name { get; set; }
         public string Owner { get; set; }
         public string Path { get; set; }

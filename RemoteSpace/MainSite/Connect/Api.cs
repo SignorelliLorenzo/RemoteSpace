@@ -3,18 +3,36 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace MainSite.Connect
 {
+
     public static class Api
     {
         private static HttpClient Client = new HttpClient();
-        public static void Initialize(string token)
+        private static string _Address;
+        public static void Initialize(string token,string Address)
         {
             Client.DefaultRequestHeaders.Authorization= new AuthenticationHeaderValue("Bearer", token);
+            _Address = Address;
+        }
+        public static async Task<byte[]> GetFile(int id)
+        {
+            
+
+            HttpResponseMessage response = await Client.GetAsync(_Address+"");
+            response.EnsureSuccessStatusCode();
+            var result = JsonConvert.DeserializeObject<ResponseFile>(await response.Content.ReadAsStringAsync());
+            if (!result.Status)
+            {
+                throw new Exception(result.Errors[0]);
+            }
+
+            return result.Content;
         }
         public static async Task< List<FileElement>> GetDirFiles(string path)
         {
@@ -23,7 +41,7 @@ namespace MainSite.Connect
                 path = "\\" + path;
             }
             
-                HttpResponseMessage response = await Client.GetAsync("");
+                HttpResponseMessage response = await Client.GetAsync(_Address + "");
                 response.EnsureSuccessStatusCode();
                 var result = JsonConvert.DeserializeObject<ResponseFiles>(await response.Content.ReadAsStringAsync());
                 if(!result.Status)
@@ -32,29 +50,30 @@ namespace MainSite.Connect
                 }
 
                 return result.Content;
-            
-            
-            
         }
         public static async Task<List<FileElement>> AddFile(FileElementAddRequest Request)
         {
-
-            HttpRequestMessage request = new HttpRequestMessage();
-            request.Method = HttpMethod.Post;
-            request.RequestUri = JsonConvert.SerializeObject(Request);
-            HttpResponseMessage response = await Client.SendAsync("");
+            var response =await Client.PostAsJsonAsync(_Address + "", Request);
             response.EnsureSuccessStatusCode();
             var result = JsonConvert.DeserializeObject<ResponseFiles>(await response.Content.ReadAsStringAsync());
             if (!result.Status)
             {
                 throw new Exception(result.Errors[0]);
             }
-
             return result.Content;
-
-
-
         }
+        public static async void DeleteFile(FileElementAddRequest Request)
+        {
+            var response = await Client.DeleteAsync(_Address + "");
 
+            response.EnsureSuccessStatusCode();
+            var result = JsonConvert.DeserializeObject<ResponseModel>(await response.Content.ReadAsStringAsync());
+            if (!result.Status)
+            {
+                throw new Exception(result.Errors[0]);
+            }
+
+            return;
+        }
     }
 }

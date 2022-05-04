@@ -18,7 +18,7 @@ using SpaceApi.Models.Communication.Request;
 
 namespace SpaceApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api")]
     [ApiController]
     
     public class MainController : ControllerBase
@@ -31,7 +31,7 @@ namespace SpaceApi.Controllers
             _userManager = userManager;
         }
 
-        [HttpGet("{path}")]
+        [HttpGet("dir/{path}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ResponseFiles> GetDir(string path)
         {
@@ -58,7 +58,7 @@ namespace SpaceApi.Controllers
            
   
         }
-        [HttpGet("{path}")]
+        [HttpGet("file/{path}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ResponseFile> GetFile(int id)
         {
