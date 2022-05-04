@@ -19,7 +19,7 @@ namespace MainSite.Pages.Main
         {
             _UserManager = userManager;
         }
-        public void OnGet(string path,UserManager<IdentityUser> userManager)
+        public void OnGet(string path)
         {
             
         }
