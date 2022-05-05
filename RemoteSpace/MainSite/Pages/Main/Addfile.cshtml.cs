@@ -23,11 +23,9 @@ namespace MainSite.Pages.Main
     public class AddfileModel : PageModel
     {
         private readonly UserManager<IdentityUser> _UserManager;
-        private IHostingEnvironment _env;
-        public AddfileModel(UserManager<IdentityUser> userManager,IHostingEnvironment env)
+        public AddfileModel(UserManager<IdentityUser> userManager)
         {
             _UserManager = userManager;
-            _env = env;
         }
         public void OnGet(string path)
         {

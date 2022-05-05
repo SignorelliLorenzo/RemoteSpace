@@ -54,9 +54,6 @@ namespace SpaceApi.Controllers
                 return new ResponseFiles() { Errors = null, Status = true, Content = _context.EleFiles.Where(x => x.Path == path).ToList() };
             }
             return new ResponseFiles() { Errors = new List<string>() { "NotFound" }, Status = false, Content = null };
-            
-           
-  
         }
         [HttpGet("file/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -140,8 +137,9 @@ namespace SpaceApi.Controllers
            
             try
             {
-                _context.SaveChanges();
                 _context.EleFiles.Add(CompleteFile);
+                _context.SaveChanges();
+               
             }
             catch (Exception ex)
             {

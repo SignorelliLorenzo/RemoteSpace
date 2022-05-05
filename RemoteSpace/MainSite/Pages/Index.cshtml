@@ -5,3 +5,38 @@
 }
 
 <a class="btn btn-info" asp-page="Main/Addfile">Create</a>
+<h2>@Model.path</h2>
+<table class="table">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Upload</th>
+            <th scope="col">Weight</th>
+        </tr>
+    </thead>
+    <tbody>
+       
+        @foreach (var item in Model.Filelist)
+        {
+            if (item.IsDirectory)
+            {
+                <tr style="background-color:black;color:white">
+
+                    <td>@item.Name</td>
+                    <td>@item.UploadDate</td>
+                    <td></td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+
+                    <td>@item.Name</td>
+                    <td>@item.UploadDate</td>
+                    <td>@item.Weight</td>
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
