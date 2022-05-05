@@ -58,7 +58,7 @@ namespace SpaceApi.Controllers
            
   
         }
-        [HttpGet("file/{path}")]
+        [HttpGet("file/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ResponseFile> GetFile(int id)
         {

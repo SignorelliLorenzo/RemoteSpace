@@ -24,7 +24,7 @@ namespace MainSite.Connect
         {
             
 
-            HttpResponseMessage response = await Client.GetAsync(_Address+"");
+            HttpResponseMessage response = await Client.GetAsync(_Address+ "file/"+id);
             response.EnsureSuccessStatusCode();
             var result = JsonConvert.DeserializeObject<ResponseFile>(await response.Content.ReadAsStringAsync());
             if (!result.Status)
@@ -41,7 +41,7 @@ namespace MainSite.Connect
                 path = "\\" + path;
             }
             
-                HttpResponseMessage response = await Client.GetAsync(_Address + "");
+                HttpResponseMessage response = await Client.GetAsync(_Address + "dir/"+path);
                 response.EnsureSuccessStatusCode();
                 var result = JsonConvert.DeserializeObject<ResponseFiles>(await response.Content.ReadAsStringAsync());
                 if(!result.Status)
@@ -62,9 +62,9 @@ namespace MainSite.Connect
             }
             return result.Content;
         }
-        public static async void DeleteFile(FileElementAddRequest Request)
+        public static async void DeleteFile(int id)
         {
-            var response = await Client.DeleteAsync(_Address + "");
+            var response = await Client.DeleteAsync(_Address + id);
 
             response.EnsureSuccessStatusCode();
             var result = JsonConvert.DeserializeObject<ResponseModel>(await response.Content.ReadAsStringAsync());

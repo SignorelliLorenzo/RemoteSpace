@@ -41,7 +41,7 @@ namespace SpaceApi
             Weight=weight;
             Owner=filesent.Owner;
             UploadDate=DateTime.Now;
-            if(!filesent.Path.StartsWith("\\"))
+            if(Path==null || !filesent.Path.StartsWith("\\"))
             {
                 Path = "\\"+filesent.Path;
             }
