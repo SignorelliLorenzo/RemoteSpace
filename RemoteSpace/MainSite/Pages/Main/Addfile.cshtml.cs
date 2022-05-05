@@ -36,7 +36,6 @@ namespace MainSite.Pages.Main
         public Upload FileUpload { get; set; }
         public async Task<IActionResult> OnPost(string desc)
         {
-
             var request = new FileElementAddRequest();
             request.FileInfo = new FileElementSend() { Name= FileUpload.Submittedfile.FileName , Path= _path, Owner= User.Identity.Name,Description= desc ,IsDirectory=false,Shared=false};
             using (var ms = new MemoryStream())
@@ -47,6 +46,13 @@ namespace MainSite.Pages.Main
             }
             try
             {
+                if(!Api.CheckPath("\\"+ User.Identity.Name).Result)
+                {
+                    if(!Api.AddDir(User.Identity.Name,"", User.Identity.Name).Result)
+                    {
+                        throw new Exception("Failed to create root dir");
+                    }
+                }    
                 var response = Api.AddFile(request).Result;
                 if(response.Count==0)
                 {
@@ -55,9 +61,9 @@ namespace MainSite.Pages.Main
             }
             catch(Exception ex)
             {
-                return RedirectToPage("Error");
+                return RedirectToPage("Error.cshtml");
             }
-            return RedirectToPage("Index");
+            return RedirectToPage("Index.cshtml");
         }
     }
 }

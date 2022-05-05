@@ -41,7 +41,7 @@ namespace MainSite.Connect
                 path = "\\" + path;
             }
             
-                HttpResponseMessage response = await Client.GetAsync(_Address + "dir/"+path);
+                HttpResponseMessage response = await Client.GetAsync(_Address + "dir/"+path.Replace("\\","_5"));
                 response.EnsureSuccessStatusCode();
                 var result = JsonConvert.DeserializeObject<ResponseFiles>(await response.Content.ReadAsStringAsync());
                 if(!result.Status)
@@ -50,6 +50,42 @@ namespace MainSite.Connect
                 }
 
                 return result.Content;
+        }
+        public static async Task<bool> AddDir(string name,string path, string Owner)
+        {
+           
+            if (!path.StartsWith("\\"))
+            {
+                path = "\\" + path;
+            }
+            var requestdir = new FileElementAddRequest();
+            requestdir.FileInfo = new FileElementSend() { Name = name, Path = path, Owner = Owner, Description = "", IsDirectory = true, Shared = false };
+            requestdir.Content = null;
+            List<FileElement> response;
+            try
+            {
+               response = Api.AddFile(requestdir).Result;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            if (response.Count == 0)
+            {
+                
+            }
+            return true;
+
+        }
+        public static async Task<bool> CheckPath(string path)
+        {
+            if (!path.StartsWith("\\"))
+            {
+                path = "\\" + path;
+            }
+            HttpResponseMessage response = await Client.GetAsync(_Address + "PathEx/" + path.Replace("\\", "_5"));
+            response.EnsureSuccessStatusCode();
+            return ("true"==response.Content.ReadAsStringAsync().Result);
         }
         public static async Task<List<FileElement>> AddFile(FileElementAddRequest Request)
         {

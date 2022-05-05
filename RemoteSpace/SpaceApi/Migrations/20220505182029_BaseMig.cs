@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SpaceApi.Migrations
 {
-    public partial class Baemig : Migration
+    public partial class BaseMig : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -16,6 +16,7 @@ namespace SpaceApi.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Weight = table.Column<decimal>(type: "TEXT", nullable: false),
                     Owner = table.Column<string>(type: "TEXT", nullable: false),
+                    User = table.Column<string>(type: "TEXT", nullable: false),
                     UploadDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Path = table.Column<string>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
@@ -28,9 +29,9 @@ namespace SpaceApi.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_EleFiles_Path_Name",
+                name: "IX_EleFiles_Path_Name_User",
                 table: "EleFiles",
-                columns: new[] { "Path", "Name" },
+                columns: new[] { "Path", "Name", "User" },
                 unique: true);
         }
 

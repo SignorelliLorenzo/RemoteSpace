@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MainSite.Connect.Models
 {
-    [Index(new string[] { nameof(Path), nameof(Name), /*nameof(FatherDirectoryId), nameof(IsDirectory),*/}, IsUnique =true)]
+    [Index(new string[] { nameof(Path), nameof(Name), nameof(User) /*nameof(FatherDirectoryId), nameof(IsDirectory),*/}, IsUnique = true)]
     public class FileElement
     {
         [Key]
@@ -20,8 +20,10 @@ namespace MainSite.Connect.Models
         [Required]
         public string Owner { get; set; }
         [Required]
+        public string User { get; set; }
+        [Required]
         public DateTime UploadDate { get; set; }
-        [Required,RegularExpression("^\\")]
+        [Required, RegularExpression("^\\")]
         public string Path { get; set; }
         public string Description { get; set; }
         public bool Shared { get; set; }
@@ -33,25 +35,26 @@ namespace MainSite.Connect.Models
         {
 
         }
-        public FileElement(FileElementSend filesent,int weight)
+        public FileElement(FileElementSend filesent, int weight, string user)
         {
-           
-            Name=filesent.Name;
-            Weight=weight;
-            Owner=filesent.Owner;
-            UploadDate=DateTime.Now;
-            if(!filesent.Path.StartsWith("\\"))
+
+            Name = filesent.Name;
+            Weight = weight;
+            Owner = filesent.Owner;
+            UploadDate = DateTime.Now;
+            User = user;
+            if (filesent.Path == null || !filesent.Path.StartsWith("\\"))
             {
-                Path = "\\"+filesent.Path;
+                Path = "\\" + filesent.Path;
             }
             else
             {
                 Path = filesent.Path;
             }
-           
-            Description=filesent.Description;
-            Shared=filesent.Shared;
-            IsDirectory=filesent.IsDirectory;
+
+            Description = filesent.Description;
+            Shared = filesent.Shared;
+            IsDirectory = filesent.IsDirectory;
 
         }
     }

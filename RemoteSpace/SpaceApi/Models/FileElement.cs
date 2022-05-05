@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SpaceApi
 {
-    [Index(new string[] { nameof(Path), nameof(Name), /*nameof(FatherDirectoryId), nameof(IsDirectory),*/}, IsUnique =true)]
+    [Index(new string[] { nameof(Path), nameof(Name),nameof(User) /*nameof(FatherDirectoryId), nameof(IsDirectory),*/}, IsUnique =true)]
     public class FileElement
     {
         [Key]
@@ -20,6 +20,8 @@ namespace SpaceApi
         public decimal Weight { get; set; }
         [Required]
         public string Owner { get; set; }
+        [Required]
+        public string User { get; set; }
         [Required]
         public DateTime UploadDate { get; set; }
         [Required,RegularExpression("^\\")]
@@ -34,14 +36,15 @@ namespace SpaceApi
         {
 
         }
-        public FileElement(FileElementSend filesent,int weight)
+        public FileElement(FileElementSend filesent,int weight,string user)
         {
            
             Name=filesent.Name;
             Weight=weight;
             Owner=filesent.Owner;
             UploadDate=DateTime.Now;
-            if(Path==null || !filesent.Path.StartsWith("\\"))
+            User=user;
+            if(filesent.Path== null || !filesent.Path.StartsWith("\\"))
             {
                 Path = "\\"+filesent.Path;
             }

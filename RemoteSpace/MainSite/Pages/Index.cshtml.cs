@@ -22,13 +22,32 @@ namespace MainSite.Pages
         {
             _logger = logger;
             _userManager = userManager;
+            Filelist = new List<FileElement>();
         }
         [BindProperty]
         public List<FileElement> Filelist { get; set; }
         public void OnGet()
         {
+            
             path = "\\"+User.Identity.Name;
-            Api.GetDirFiles(path);
+            try
+            {
+                Filelist = Api.GetDirFiles(path).Result;
+            }
+            catch(Exception ex)
+            {
+                if(ex.InnerException.Message=="NotFound")
+                {
+                    if (!Api.AddDir(User.Identity.Name, "", User.Identity.Name).Result)
+                    {
+                        throw new Exception("Failed to create root dir");
+                    }
+                }
+                else
+                {
+                    throw ex.InnerException.InnerException.InnerException;
+                }
+            }
         }
 
     }

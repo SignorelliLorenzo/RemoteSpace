@@ -46,12 +46,16 @@ namespace SpaceApi.Migrations
                     b.Property<DateTime>("UploadDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("User")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<decimal>("Weight")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Path", "Name")
+                    b.HasIndex("Path", "Name", "User")
                         .IsUnique();
 
                     b.ToTable("EleFiles");
