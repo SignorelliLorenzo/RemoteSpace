@@ -4,7 +4,10 @@
     ViewData["Title"] = "Home page";
 }
 
-<a class="btn btn-info" asp-page="Main/Addfile">Create</a>
+<form asp-page="Main/Addfile" method="get">
+    <input type="submit" class="btn btn-info"   value="Create"/>
+    <input type="hidden" value=@Model.path name="path"/>
+</form>
 <h2>@Model.path</h2>
 <table class="table">
     <thead class="thead-dark">

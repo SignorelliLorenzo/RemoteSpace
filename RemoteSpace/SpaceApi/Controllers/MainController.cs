@@ -66,13 +66,13 @@ namespace SpaceApi.Controllers
 
             if (System.IO.File.Exists(completepath))
             {
-                return new ResponseFiles() { Errors = new List<string> { "IsAFile" }, Status = true, Content = _context.EleFiles.Where(x => x.Path+x.Name == path.Substring(0, path.IndexOf(Path.GetDirectoryName(completepath)))&& x.User == user).ToList() };
+                return new ResponseFiles() { Errors = new List<string> { "IsAFile" }, Status = true, Content = _context.EleFiles.Where(x => x.Path == path.Substring(0, path.IndexOf(Path.GetDirectoryName(completepath)))&& x.User == user).ToList() };
 
             }
             else if (System.IO.Directory.Exists(completepath))
             {
                 
-                var x= new ResponseFiles() { Errors = null, Status = true, Content = (_context.EleFiles.Where(x => x.Path+x.Name == path && x.User == user).ToList())};
+                var x= new ResponseFiles() { Errors = null, Status = true, Content = (_context.EleFiles.Where(x => x.Path == path && x.User == user).ToList())};
                 return x;
             }
             return new ResponseFiles() { Errors = new List<string>() { "NotFound" }, Status = false, Content = null };

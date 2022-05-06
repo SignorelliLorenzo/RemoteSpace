@@ -29,15 +29,15 @@ namespace MainSite.Pages.Main
         }
         public void OnGet(string path)
         {
-            
+            _path = path;
         }
         public string _path;
         [BindProperty]
         public Upload FileUpload { get; set; }
-        public async Task<IActionResult> OnPost(string desc)
+        public async Task<IActionResult> OnPost(string path,string desc)
         {
             var request = new FileElementAddRequest();
-            request.FileInfo = new FileElementSend() { Name= FileUpload.Submittedfile.FileName , Path= _path, Owner= User.Identity.Name,Description= desc ,IsDirectory=false,Shared=false};
+            request.FileInfo = new FileElementSend() { Name= FileUpload.Submittedfile.FileName , Path= path, Owner= User.Identity.Name,Description= desc ,IsDirectory=false,Shared=false};
             using (var ms = new MemoryStream())
             {
                 FileUpload.Submittedfile.CopyTo(ms);
