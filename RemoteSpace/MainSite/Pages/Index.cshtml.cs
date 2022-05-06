@@ -45,7 +45,7 @@ namespace MainSite.Pages
                 }
                 else
                 {
-                    throw ex.InnerException.InnerException.InnerException;
+                    throw ex.InnerException;
                 }
             }
         }

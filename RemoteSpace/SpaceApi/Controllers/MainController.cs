@@ -36,13 +36,14 @@ namespace SpaceApi.Controllers
         {
             path = path.Replace("_5", "\\");
             var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName ;
+            var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
             if (!path.StartsWith('\\'))
             {
                 path = "\\" + path;
             }
             var completepath = basedir + path.Trim();
 
-            if ((System.IO.File.Exists(completepath) || System.IO.Directory.Exists(completepath)) &&  _context.EleFiles.Where(x=>x.Path==path && x.User== _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName).Any())
+            if ((System.IO.File.Exists(completepath) || System.IO.Directory.Exists(completepath)) &&  _context.EleFiles.Where(x=>x.Path+x.Name==path && x.User== user).Any())
             {
                 return true;
 
@@ -55,21 +56,23 @@ namespace SpaceApi.Controllers
         public async Task<ResponseFiles> GetDir(string path)
         {
             path = path.Replace("_5", "\\");
-            var basedir = Environment.GetEnvironmentVariable("MainPath")+"\\"+ _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName; ; 
+            var basedir = Environment.GetEnvironmentVariable("MainPath")+"\\"+ _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName; 
             if (!path.StartsWith('\\'))
             {
                 path = "\\"+path ;
             }
             var completepath = basedir + path.Trim();
-            
-            if(System.IO.File.Exists(completepath))
+            var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
+
+            if (System.IO.File.Exists(completepath))
             {
-                return new ResponseFiles() { Errors = new List<string> { "IsAFile" }, Status = true, Content = _context.EleFiles.Where(x => x.Path == path.Substring(0, path.IndexOf(Path.GetDirectoryName(completepath)))&& x.User == _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName).ToList() };
+                return new ResponseFiles() { Errors = new List<string> { "IsAFile" }, Status = true, Content = _context.EleFiles.Where(x => x.Path+x.Name == path.Substring(0, path.IndexOf(Path.GetDirectoryName(completepath)))&& x.User == user).ToList() };
 
             }
             else if (System.IO.Directory.Exists(completepath))
             {
-                var x= new ResponseFiles() { Errors = null, Status = true, Content = _context.EleFiles.Where(x => x.Path == path && x.User == _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName).ToList() };
+                
+                var x= new ResponseFiles() { Errors = null, Status = true, Content = (_context.EleFiles.Where(x => x.Path+x.Name == path && x.User == user).ToList())};
                 return x;
             }
             return new ResponseFiles() { Errors = new List<string>() { "NotFound" }, Status = false, Content = null };
@@ -78,14 +81,14 @@ namespace SpaceApi.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ResponseFile> GetFile(int id)
         {
-
-            var fileElement = _context.EleFiles.Where(x => x.Id == id && x.User == _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName).FirstOrDefault();
+            var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
+            var fileElement = _context.EleFiles.Where(x => x.Id == id && x.User ==user).FirstOrDefault();
             if (fileElement == null)
             {
                 return new ResponseFile() { Errors = { "NotFound" }, Status = false, Content=null };
             }
             var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
-            string CompletePath = basedir + "\\" + fileElement.Path + "\\" + fileElement.Name;
+            string CompletePath = basedir + fileElement.Path + "\\" + fileElement.Name;
             if(!System.IO.File.Exists(CompletePath))
             {
                 _context.EleFiles.Remove(fileElement);
@@ -100,14 +103,15 @@ namespace SpaceApi.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ResponseFiles> AddFileElement(FileElementAddRequest fileElement)
         {
+            var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
             FileElement CompleteFile;
             if (fileElement.FileInfo.IsDirectory)
             {
-                CompleteFile = new FileElement(fileElement.FileInfo, 0, _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName);
+                CompleteFile = new FileElement(fileElement.FileInfo, 0,user );
             }
             else
             {
-                CompleteFile = new FileElement(fileElement.FileInfo, fileElement.Content.Count(), _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName);
+                CompleteFile = new FileElement(fileElement.FileInfo, fileElement.Content.Count(), user);
             }
             
             
