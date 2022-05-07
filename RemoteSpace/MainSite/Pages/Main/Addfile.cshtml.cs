@@ -20,6 +20,7 @@ namespace MainSite.Pages.Main
         [DataType(DataType.Upload)]
         public IFormFile Submittedfile { get; set; }
     }
+    [DisableRequestSizeLimit]
     public class AddfileModel : PageModel
     {
         private readonly UserManager<IdentityUser> _UserManager;
@@ -34,6 +35,7 @@ namespace MainSite.Pages.Main
         public string _path;
         [BindProperty]
         public Upload FileUpload { get; set; }
+  
         public async Task<IActionResult> OnPost(string path,string desc)
         {
             var request = new FileElementAddRequest();
@@ -41,7 +43,7 @@ namespace MainSite.Pages.Main
             using (var ms = new MemoryStream())
             {
                 FileUpload.Submittedfile.CopyTo(ms);
-                request.Content = ms.ToArray();
+                request.Content = Convert.ToBase64String(ms.ToArray());
                 // act on the Base64 data
             }
             try

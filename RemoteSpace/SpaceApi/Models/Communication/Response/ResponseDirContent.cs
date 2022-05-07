@@ -14,7 +14,10 @@ namespace SpaceApi.Models
     {
         public List<FileElement> Content { get; set; }
     }
-
+    public class ResponseFileId : ResponseModel
+    {
+        public int Id { get; set; }
+    }
     public class ResponseFile : ResponseModel
     {
         public byte[] Content { get; set; }

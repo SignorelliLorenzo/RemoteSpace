@@ -101,6 +101,7 @@ namespace SpaceApi.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [DisableRequestSizeLimit]
         public async Task<ResponseFiles> AddFileElement(FileElementAddRequest fileElement)
         {
             var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
@@ -122,7 +123,7 @@ namespace SpaceApi.Controllers
             {
                 Directory.CreateDirectory(basedir);
             }
-            var completepath = basedir  + fileElement.FileInfo.Path +  fileElement.FileInfo.Name;
+            var completepath = basedir  + fileElement.FileInfo.Path +"\\"+  fileElement.FileInfo.Name;
             try
             {
                 Path.GetFullPath(completepath);
@@ -165,7 +166,7 @@ namespace SpaceApi.Controllers
             else
             {
                 var newfile = System.IO.File.Create(completepath);
-                newfile.Write(fileElement.Content);
+                newfile.Write(Convert.FromBase64String(fileElement.Content));
                 newfile.Close();
             }
             try

@@ -5,8 +5,8 @@
 }
 
 <form asp-page="Main/Addfile" method="get">
-    <input type="submit" class="btn btn-info"   value="Create"/>
-    <input type="hidden" value=@Model.path name="path"/>
+    <input type="submit" class="btn btn-info" value="Create" />
+    <input type="hidden" value=@Model.path name="path" />
 </form>
 <h2>@Model.path</h2>
 <table class="table">
@@ -18,12 +18,12 @@
         </tr>
     </thead>
     <tbody>
-       
+
         @foreach (var item in Model.Filelist)
         {
             if (item.IsDirectory)
             {
-                <tr style="background-color:black;color:white">
+                <tr class='clickable-row' data-href='url:' style="background-color:black;color:white">
 
                     <td>@item.Name</td>
                     <td>@item.UploadDate</td>
@@ -43,3 +43,11 @@
 
     </tbody>
 </table>
+<script type="text/javascript">
+    jQuery(document).ready(function ($) {
+        $(".clickable-row").click(function () {
+            window.location = $(this).data("href");
+        });
+    });
+</script>
+

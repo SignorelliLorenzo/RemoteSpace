@@ -5,7 +5,7 @@ namespace MainSite.Connect.Models
     public class FileElementAddRequest 
     {
         public FileElementSend FileInfo { get; set; }
-        public byte[] Content { get; set; }
+        public string Content { get; set; }
     }
     public class FileElementSend
     {
