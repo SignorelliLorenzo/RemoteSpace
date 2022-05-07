@@ -123,7 +123,7 @@ namespace SpaceApi.Controllers
             {
                 Directory.CreateDirectory(basedir);
             }
-            var completepath = basedir  + fileElement.FileInfo.Path +"\\"+  fileElement.FileInfo.Name;
+            var completepath = basedir + CompleteFile.Path +"\\"+ CompleteFile.Name;
             try
             {
                 Path.GetFullPath(completepath);

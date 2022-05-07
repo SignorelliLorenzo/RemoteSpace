@@ -18,6 +18,7 @@ namespace MainSite.Pages
         private readonly ILogger<IndexModel> _logger;
         private readonly UserManager<IdentityUser> _userManager;
         public string path;
+        public string OldPath;
         public IndexModel(ILogger<IndexModel> logger, UserManager<IdentityUser> userManager)
         {
             _logger = logger;
@@ -26,10 +27,26 @@ namespace MainSite.Pages
         }
         [BindProperty]
         public List<FileElement> Filelist { get; set; }
-        public void OnGet()
+        public async Task<IActionResult> OnGet(string spath)
         {
+            if(spath!= "\\" + User.Identity.Name)
+            {
+                OldPath = path;
+            }
+            path = spath;
+            if(string.IsNullOrWhiteSpace(path))
+            {
+                path = "\\" + User.Identity.Name;
+            }
+            if (!path.StartsWith("\\"))
+            {
+                path = "\\"+path;
+            }
+            if (!path.StartsWith("\\"+User.Identity.Name))
+            {
+                return RedirectToPage("/Error");
+            }
             
-            path = "\\"+User.Identity.Name;
             try
             {
                 Filelist = Api.GetDirFiles(path).Result;
@@ -48,7 +65,37 @@ namespace MainSite.Pages
                     throw ex.InnerException;
                 }
             }
+            return Page();
         }
-
+        public async Task<IActionResult> OnPost(string DirName,string path)
+        {
+            if (!path.StartsWith("\\"))
+            {
+                path = "\\" + path;
+            }
+            if (!path.StartsWith("\\" + User.Identity.Name))
+            {
+                return RedirectToPage("/Error");
+            }
+            try
+            {
+                if (!Api.CheckPath("\\" + User.Identity.Name).Result)
+                {
+                    if (!Api.AddDir(User.Identity.Name, "", User.Identity.Name).Result)
+                    {
+                        throw new Exception("Failed to create root dir");
+                    }
+                }
+                if (!Api.AddDir(DirName,path, User.Identity.Name).Result)
+                {
+                    throw new Exception("Failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                return RedirectToPage("/Error");
+            }
+            return RedirectToPage("/Index", new {spath=path});
+        }
     }
 }

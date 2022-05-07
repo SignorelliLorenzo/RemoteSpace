@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\RemoteSpace",
+    "\\RemoteSpace\\SpaceApi",
+    "\\RemoteSpace\\SpaceApi\\Controllers"
   ],
-  "SelectedNode": "\\RemoteSpace.sln",
+  "SelectedNode": "\\RemoteSpace\\SpaceApi\\Controllers\\MainController.cs",
   "PreviewInSolutionExplorer": false
 }

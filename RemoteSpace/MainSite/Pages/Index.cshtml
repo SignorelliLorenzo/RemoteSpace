@@ -8,6 +8,11 @@
     <input type="submit" class="btn btn-info" value="Create" />
     <input type="hidden" value=@Model.path name="path" />
 </form>
+<form method="post">
+    <input type="submit" class="btn btn-info"   value="New Dir"/>
+    <input type="hidden" value=@Model.path name="path"/>
+    <input type="text" name="DirName"/>
+</form>
 <h2>@Model.path</h2>
 <table class="table">
     <thead class="thead-dark">
@@ -18,15 +23,25 @@
         </tr>
     </thead>
     <tbody>
+        @if(@Model.OldPath!="")
+        {
+            <tr onclick="window.location='?spath=@Model.OldPath.Replace("\\","\\\\");"  style="background-color:black;color:white;cursor:pointer">
 
-        @foreach (var item in Model.Filelist)
+                    <td>...</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+        }
+        @foreach (var item in Model.Filelist.OrderByDescending(x=>x.IsDirectory))
         {
             if (item.IsDirectory)
             {
-                <tr class='clickable-row' data-href='url:' style="background-color:black;color:white">
+                <tr onclick="window.location='?spath=@item.Path.Replace("\\","\\\\")\\@item.Name';"  style="background-color:black;color:white;cursor:pointer">
 
                     <td>@item.Name</td>
                     <td>@item.UploadDate</td>
+                    <td></td>
                     <td></td>
                 </tr>
             }
@@ -37,17 +52,13 @@
                     <td>@item.Name</td>
                     <td>@item.UploadDate</td>
                     <td>@item.Weight</td>
+                    <td>
+                        <a href="" target="_blank" class="btn btn-dark">Download</a>
+                    </td>
                 </tr>
             }
         }
 
     </tbody>
 </table>
-<script type="text/javascript">
-    jQuery(document).ready(function ($) {
-        $(".clickable-row").click(function () {
-            window.location = $(this).data("href");
-        });
-    });
-</script>
 
