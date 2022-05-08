@@ -29,15 +29,17 @@ namespace MainSite.Pages
         public List<FileElement> Filelist { get; set; }
         public async Task<IActionResult> OnGet(string spath)
         {
-            if(spath!= "\\" + User.Identity.Name)
+            
+            if (string.IsNullOrWhiteSpace(spath))
             {
-                OldPath = path;
+                spath = "\\" + User.Identity.Name;
+            }
+            if (spath!= "\\" + User.Identity.Name)
+            {
+                OldPath = spath.Substring(0,spath.IndexOf("\\"+spath.Split("\\").Last()));
             }
             path = spath;
-            if(string.IsNullOrWhiteSpace(path))
-            {
-                path = "\\" + User.Identity.Name;
-            }
+            
             if (!path.StartsWith("\\"))
             {
                 path = "\\"+path;
@@ -67,7 +69,7 @@ namespace MainSite.Pages
             }
             return Page();
         }
-        public async Task<IActionResult> OnPost(string DirName,string path)
+        public async Task<IActionResult> OnPost(string DirName,string path, string btn, int? Id,string name)
         {
             if (!path.StartsWith("\\"))
             {
@@ -77,6 +79,19 @@ namespace MainSite.Pages
             {
                 return RedirectToPage("/Error");
             }
+            if (btn == "Download")
+            {
+                if (Id == null)
+                {
+                    return RedirectToPage("/Index", new { spath = path });
+                }
+                var data = Api.GetFile((int)Id).Result;
+                return File(data, "application/octet-stream", name);
+            }
+            if(string.IsNullOrWhiteSpace(DirName))
+            {
+                return RedirectToPage("/Index", new { spath = path });
+            }    
             try
             {
                 if (!Api.CheckPath("\\" + User.Identity.Name).Result)

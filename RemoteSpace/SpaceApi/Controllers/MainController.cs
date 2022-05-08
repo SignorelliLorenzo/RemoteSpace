@@ -95,7 +95,7 @@ namespace SpaceApi.Controllers
                 return new ResponseFile() { Errors = { "FileDoesNotExist" }, Status = false, Content = null };
 
             }
-            return new ResponseFile() { Errors = null, Status = false, Content = System.IO.File.ReadAllBytes(CompletePath) };
+            return new ResponseFile() { Errors = null, Status = true, Content = System.IO.File.ReadAllBytes(CompletePath) };
         }
         // POST: api/Main
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

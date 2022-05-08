@@ -2,16 +2,23 @@
 @model MainSite.Pages.Main.AddfileModel
 @{
 }
-<form enctype="multipart/form-data" method="post">
-    <dl>
-        <dt>
-            <label asp-for="FileUpload.Submittedfile"></label>
-        </dt>
-        <dd>
-            <input asp-for="FileUpload.Submittedfile" type="file">
-            <span asp-validation-for="FileUpload.Submittedfile"></span>
-        </dd>
-    </dl>
-    <input asp-page-handler="Upload" class="btn" type="submit" value="Upload" />
-    <input type="hidden" value=@Model._path name="path"/>
-</form>
+<style>
+.image-upload > input {
+    display: none;
+}
+</style>
+<div class="container-fluid">
+    
+    <form enctype="multipart/form-data" method="post">
+        <div class="image-upload">
+            <label for="file-input">
+           <img src="~/Img/upload.png" style="cursor:pointer"/>      
+           </label>
+
+             <input id="file-input" asp-for="FileUpload.Submittedfile" type="file">   
+
+        </div>
+        <input asp-page-handler="Upload" class="btn" type="submit" value="Upload" />
+        <input type="hidden" value=@Model._path name="path"/>
+    </form>
+</div>

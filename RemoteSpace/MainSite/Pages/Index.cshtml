@@ -3,42 +3,55 @@
 @{
     ViewData["Title"] = "Home page";
 }
+<div class="container">
+<div class="row">
+    <div class="col" style="padding-left:1px"><input type="text" asp-for="path" name="DirName" class="form-control" readonly/></div>
+     <div  class="col-xs-auto " style="text-align: right;">
+         <form asp-page="Main/Addfile" method="get">
+        <input type="image" src="/Img/fileadd.png" width="40" height="40" value="Add file" />
+        <input type="hidden" value=@Model.path name="path" />
+    </form>
+     </div>
+    
+    <div  class="col-md-auto form-group" style="margin-left:10px;padding-right:1px"><form method="post">
+        <div class="row">
+        <div class="col-xs-auto"><input type="image" src="/Img/folderadd.png" width="40" height="40" value="New dir" /></div>
+        <div class="col"><input type="text" name="DirName" class="form-control" placeholder="Directory name" /></div>
+        </div>
+        <input type="hidden" value=@Model.path name="path" />
+        
+    </form></div>
+    
+</div>
+</div>
 
-<form asp-page="Main/Addfile" method="get">
-    <input type="submit" class="btn btn-info" value="Create" />
-    <input type="hidden" value=@Model.path name="path" />
-</form>
-<form method="post">
-    <input type="submit" class="btn btn-info"   value="New Dir"/>
-    <input type="hidden" value=@Model.path name="path"/>
-    <input type="text" name="DirName"/>
-</form>
-<h2>@Model.path</h2>
-<table class="table">
-    <thead class="thead-dark">
+<table class="table table-hover">
+    <thead>
         <tr>
+            <th scope="col"></th>
             <th scope="col">Name</th>
             <th scope="col">Upload</th>
             <th scope="col">Weight</th>
+            <th scope="col"></th>
         </tr>
     </thead>
     <tbody>
-        @if(@Model.OldPath!="")
+        @if (!string.IsNullOrEmpty(@Model.OldPath))
         {
-            <tr onclick="window.location='?spath=@Model.OldPath.Replace("\\","\\\\");"  style="background-color:black;color:white;cursor:pointer">
-
-                    <td>...</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
+            <tr onclick="window.location='?spath=@Model.OldPath.Replace("\\","\\\\")';" style="cursor:pointer">
+                <td><img src="/Img/folder.png" width="40" height="40" /></td>
+                <td>...</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
         }
-        @foreach (var item in Model.Filelist.OrderByDescending(x=>x.IsDirectory))
+        @foreach (var item in Model.Filelist.OrderByDescending(x => x.IsDirectory))
         {
             if (item.IsDirectory)
             {
-                <tr onclick="window.location='?spath=@item.Path.Replace("\\","\\\\")\\@item.Name';"  style="background-color:black;color:white;cursor:pointer">
-
+                <tr onclick="window.location='?spath=@item.Path.Replace("\\","\\\\")\\@item.Name';" style="cursor:pointer">
+                    <td><img src="/Img/folder.png" width="40" height="40" /></td>
                     <td>@item.Name</td>
                     <td>@item.UploadDate</td>
                     <td></td>
@@ -48,12 +61,18 @@
             else
             {
                 <tr>
-
+                    <td><img src="/Img/file.png" width="40" height="40" /></td>
                     <td>@item.Name</td>
                     <td>@item.UploadDate</td>
                     <td>@item.Weight</td>
                     <td>
-                        <a href="" target="_blank" class="btn btn-dark">Download</a>
+                        <form method="post">
+                            <input type="image"src="/Img/download.png" width="50" height="40" alt="Download" />
+                            <input type="hidden" value="Download" name="btn" />
+                            <input type="hidden" value=@item.Id name="Id" />
+                            <input type="hidden" value=@item.Name name="name" />
+                            <input type="hidden" value=@Model.path name="path" />
+                        </form>
                     </td>
                 </tr>
             }

@@ -16,7 +16,7 @@ namespace MainSite.Pages.Main
 {
     public class Upload
     {
-        [Display(Name = "Add a picture")]
+        [Display(Name = "Add a file")]
         [DataType(DataType.Upload)]
         public IFormFile Submittedfile { get; set; }
     }
