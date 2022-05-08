@@ -1,18 +1,38 @@
 ﻿@page
 @model MainSite.Pages.Main.AddfileModel
 @{
+   
+}
+@section Scripts
+{
+    <script type="text/javascript">
+   $(document).ready(function()
+{
+    $("#uploadimg").hover(
+        function()
+        {
+            $(this).attr("src", "/Img/upload.gif");
+        },
+        function()
+        {
+            $(this).attr("src", "/Img/upload.png");
+        }                         
+    );                  
+});
+</script>
 }
 <style>
 .image-upload > input {
     display: none;
 }
+
 </style>
 <div class="container-fluid">
     
     <form enctype="multipart/form-data" method="post">
-        <div class="image-upload">
+        <div class="image-upload" id="Gif">
             <label for="file-input">
-           <img src="~/Img/upload.png" style="cursor:pointer"/>      
+                 <img src="~/Img/upload.png"  style="cursor:pointer,border-radius: 50%; border-color:black" id="uploadimg" />
            </label>
 
              <input id="file-input" asp-for="FileUpload.Submittedfile" type="file">   
@@ -22,3 +42,4 @@
         <input type="hidden" value=@Model._path name="path"/>
     </form>
 </div>
+

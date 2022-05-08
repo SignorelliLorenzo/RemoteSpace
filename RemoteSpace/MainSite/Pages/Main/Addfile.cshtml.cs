@@ -16,6 +16,7 @@ namespace MainSite.Pages.Main
 {
     public class Upload
     {
+        [Required]
         [Display(Name = "Add a file")]
         [DataType(DataType.Upload)]
         public IFormFile Submittedfile { get; set; }
@@ -38,6 +39,11 @@ namespace MainSite.Pages.Main
   
         public async Task<IActionResult> OnPost(string path,string desc)
         {
+           if(!ModelState.IsValid)
+            {
+                _path = path;
+                return Page();
+            }
             var request = new FileElementAddRequest();
             request.FileInfo = new FileElementSend() { Name= FileUpload.Submittedfile.FileName , Path= path, Owner= User.Identity.Name,Description= desc ,IsDirectory=false,Shared=false};
             using (var ms = new MemoryStream())

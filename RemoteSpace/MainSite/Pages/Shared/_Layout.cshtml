@@ -8,6 +8,13 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
+   
+<script type="text/javascript">
+    $(document).ready(function () {
+        var divLength = $('div').length;
+        alert(divLength);
+    });
+</script>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
@@ -41,7 +48,7 @@
             &copy; 2022 - MainSite - <a asp-area="" asp-page="/Privacy">Privacy</a>
         </div>
     </footer>
-
+    
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
