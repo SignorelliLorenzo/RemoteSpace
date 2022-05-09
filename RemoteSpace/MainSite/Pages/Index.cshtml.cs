@@ -23,10 +23,10 @@ namespace MainSite.Pages
         {
             _logger = logger;
             _userManager = userManager;
-            Filelist = new List<FileElement>();
+            Filelist = new List<FileDisplay>();
         }
         [BindProperty]
-        public List<FileElement> Filelist { get; set; }
+        public List<FileDisplay> Filelist { get; set; }
         public async Task<IActionResult> OnGet(string spath)
         {
             
@@ -51,7 +51,8 @@ namespace MainSite.Pages
             
             try
             {
-                Filelist = Api.GetDirFiles(path).Result;
+                var resultFilelist = Api.GetDirFiles(path).Result;
+                Filelist = resultFilelist.Select(f => new FileDisplay(f)).ToList();
             }
             catch(Exception ex) 
             {
@@ -128,5 +129,6 @@ namespace MainSite.Pages
             }
             return RedirectToPage("/Index", new {spath=path});
         }
+        
     }
 }

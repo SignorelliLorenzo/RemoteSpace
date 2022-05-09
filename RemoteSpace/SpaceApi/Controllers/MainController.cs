@@ -184,7 +184,62 @@ namespace SpaceApi.Controllers
             return new ResponseFiles() { Errors = null, Status = true, Content = new List<FileElement> { CompleteFile } };
 
         }
+        private bool RemoveDir (string rootpath,int id,bool save)
+        {
+            bool failed = false;
+            var dir=_context.EleFiles.Find(id);
+            var partialpath = rootpath + dir.Path+"\\" + dir.Name;
+            if(!Directory.Exists(partialpath))
+            {
+                return false;
+            }
+            var elements = _context.EleFiles.Where(x => x.Path == dir.Path + "\\" + dir.Name);
+            foreach (var element in elements)
+            {
+                if (element.IsDirectory)
+                {
+                    var result = RemoveDir(rootpath, element.Id, false);
+                    if (!result && save)
+                    {
+                        failed = true;
+                        break;
+                    }
+                    else if(!result)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if(System.IO.File.Exists(partialpath + "\\" + element.Name))
+                    {
+                        _context.EleFiles.Remove(element);
 
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    
+                }
+
+            }
+
+            _context.EleFiles.Remove(dir);
+            if (save && !failed)
+            {
+                _context.SaveChanges();
+                DirectoryInfo todelete=new DirectoryInfo(partialpath);
+                todelete.Delete(true);
+            }
+            else if(save)
+            {
+
+                _context.ChangeTracker.Clear();
+                return false;
+            }
+            return true;
+        }
         // DELETE: api/Main/5
         [HttpDelete("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -194,14 +249,25 @@ namespace SpaceApi.Controllers
             var fileElement =  _context.EleFiles.Where(x=>x.Id==id && x.User== user).FirstOrDefault();
             if (fileElement == null)
             {
-                return new ResponseModel() { Errors = { "NotFound" }, Status = false }; 
+                return new ResponseModel() { Errors = new List<string>() { "NotFound" }, Status = false }; 
             }
             var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
-            string CompletePath = basedir + "\\" + fileElement.Path + "\\" + fileElement.Name;
-            _context.EleFiles.Remove(fileElement);
-            await _context.SaveChangesAsync();
-            System.IO.File.Delete(CompletePath);
-            return new ResponseModel() { Errors = { }, Status=true };
+            if(fileElement.IsDirectory)
+            {
+               if( RemoveDir(basedir, fileElement.Id, true))
+                {
+                    return new ResponseModel() { Errors = new List<string>() { "failed to delete dir" }, Status = true };
+                }
+            }
+            else 
+            {
+                string CompletePath = basedir + "\\" + fileElement.Path + "\\" + fileElement.Name;
+                _context.EleFiles.Remove(fileElement);
+                await _context.SaveChangesAsync();
+                System.IO.File.Delete(CompletePath);
+               
+            }
+            return new ResponseModel() { Errors = new List<string>() { }, Status = true };
         }
 
     }

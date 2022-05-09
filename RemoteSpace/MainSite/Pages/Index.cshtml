@@ -3,27 +3,32 @@
 @{
     ViewData["Title"] = "Home page";
 }
-
+@section Stylesheets
+{
+<link rel="stylesheet" href="~/css/mobile.css" media="screen">
+}
 <div class="container">
-<div class="row">
-    <div class="col" style="padding-left:1px"><input type="text" asp-for="path" name="DirName" class="form-control" readonly/></div>
-     <div  class="col-xs-auto " style="text-align: right;">
-         <form asp-page="Main/Addfile" method="get">
-        <input type="image" src="/Img/fileadd.png" width="40" height="40" value="Add file" />
-        <input type="hidden" value=@Model.path name="path" />
-    </form>
-     </div>
-    
-    <div  class="col-md-auto form-group" style="margin-left:10px;padding-right:1px"><form method="post">
-        <div class="row">
-        <div class="col-xs-auto"><input type="image" src="/Img/folderadd.png" width="40" height="40" value="New dir" /></div>
-        <div class="col"><input type="text" name="DirName" class="form-control" placeholder="Directory name" /></div>
+    <div class="row">
+        <div class="col" style="padding-left:1px"><input type="text" asp-for="path" name="DirName" class="form-control" readonly /></div>
+        <div class="col-xs-auto " style="text-align: right;">
+            <form asp-page="Main/Addfile" method="get">
+                <input type="image" src="/Img/fileadd.png" width="40" height="40" value="Add file" />
+                <input type="hidden" value=@Model.path name="path" />
+            </form>
         </div>
-        <input type="hidden" value=@Model.path name="path" />
-        
-    </form></div>
-    
-</div>
+
+        <div class="col-md-auto form-group" style="margin-left:10px;padding-right:1px">
+            <form method="post">
+                <div class="row">
+                    <div class="col-xs-auto"><input type="image" src="/Img/folderadd.png" width="40" height="40" value="New dir" /></div>
+                    <div class="col"><input type="text" name="DirName" class="form-control" placeholder="Directory name" /></div>
+                </div>
+                <input type="hidden" value=@Model.path name="path" />
+
+            </form>
+        </div>
+
+    </div>
 </div>
 
 <table class="table table-hover">
@@ -56,7 +61,16 @@
                     <td>@item.Name</td>
                     <td>@item.UploadDate</td>
                     <td></td>
-                    <td></td>
+                    <td>
+                        
+                                <form method="post" onclick="return confirm('Are you sure you want to delete this? all files in it will be lost')">
+                                    <input type="image" src="~/Img/delete.png" width="30" height="30" style="margin-left:25px" />
+                                    <input type="hidden" name="btn" value="Delete" />
+                                    <input type="hidden" value=@item.Id name="Id" />
+                                    <input type="hidden" value=@item.Name name="name" />
+                                    <input type="hidden" value=@Model.path name="path" />
+                                </form>
+                    </td>
                 </tr>
             }
             else
@@ -70,25 +84,55 @@
                         <div class="row">
                             <div class="col-xs-auto">
                                 <form method="post">
-                            <input type="image" src="/Img/download.png" width="30" height="35" alt="Download" style="padding-top:0px"/>
-                            <input type="hidden" value="Download" name="btn" />
-                            <input type="hidden" value=@item.Id name="Id" />
-                            <input type="hidden" value=@item.Name name="name" />
-                            <input type="hidden" value=@Model.path name="path" />
-                        </form>
+                                    <input type="image" src="/Img/download.png" width="30" height="35" alt="Download" style="padding-bottom:5px" />
+                                    <input type="hidden" value="Download" name="btn" />
+                                    <input type="hidden" value=@item.Id name="Id" />
+                                    <input type="hidden" value=@item.Name name="name" />
+                                    <input type="hidden" value=@Model.path name="path" />
+                                </form>
                             </div>
                             <div class="col-xs-auto">
-                                 
-                        <form method="post"  onclick="return confirm('Are you sure you want to delete this?')">
-                            <input type="image" src="~/Img/delete.png" width="50" height="40" style="margin-left:5px"/>
-                            <input type="hidden"  name="btn" value="Delete" />
-                            <input type="hidden" value=@item.Id name="Id" />
-                            <input type="hidden" value=@item.Name name="name" />
-                            <input type="hidden" value=@Model.path name="path" />
-                          </form>
+
+                                <form method="post" onclick="return confirm('Are you sure you want to delete this?')">
+                                    <input type="image" src="~/Img/delete.png" width="30" height="30" style="margin-left:10px" />
+                                    <input type="hidden" name="btn" value="Delete" />
+                                    <input type="hidden" value=@item.Id name="Id" />
+                                    <input type="hidden" value=@item.Name name="name" />
+                                    <input type="hidden" value=@Model.path name="path" />
+                                </form>
+                            </div>
+                            <div class="col-xs-auto">
+                                 <input type="image" src="~/Img/info.png" width="30" height="30" style="margin-left:10px"  data-toggle="modal" data-target="#exampleModal"/>
+
+                                <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Description</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                @item.Description
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <form method="post" onclick="return confirm('Are you sure you want to delete this?')">
+                                   
+                                    <input type="hidden" name="btn" value="Delete" />
+                                    <input type="hidden" value=@item.Id name="Id" />
+                                    <input type="hidden" value=@item.Name name="name" />
+                                    <input type="hidden" value=@Model.path name="path" />
+                                </form>
                             </div>
                         </div>
-                       
+
                     </td>
                 </tr>
             }
