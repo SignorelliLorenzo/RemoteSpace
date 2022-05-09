@@ -53,9 +53,9 @@ namespace MainSite.Pages
             {
                 Filelist = Api.GetDirFiles(path).Result;
             }
-            catch(Exception ex)
+            catch(Exception ex) 
             {
-                if(ex.InnerException.Message=="NotFound")
+                if(ex.InnerException.Message=="NotFound" && path== "\\Admin@admin.com")
                 {
                     if (!Api.AddDir(User.Identity.Name, "", User.Identity.Name).Result)
                     {
@@ -79,7 +79,23 @@ namespace MainSite.Pages
             {
                 return RedirectToPage("/Error");
             }
-            if (btn == "Download")
+            if(btn=="Delete")
+            {
+                if (Id == null)
+                {
+                    return RedirectToPage("/Index", new { spath = path });
+                }
+
+                var RESULT = Api.DeleteFile((int)Id).Result;
+
+                if (!RESULT)
+                {
+                    return NotFound();
+                }
+
+                return RedirectToPage("/Index", new { spath = path });
+            }
+            else if (btn == "Download")
             {
                 if (Id == null)
                 {

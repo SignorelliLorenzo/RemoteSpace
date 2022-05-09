@@ -190,7 +190,8 @@ namespace SpaceApi.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ResponseModel> DeleteFileElement(int id)
         {
-            var fileElement =  _context.EleFiles.Where(x=>x.Id==id && x.User== _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName).FirstOrDefault();
+            var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
+            var fileElement =  _context.EleFiles.Where(x=>x.Id==id && x.User== user).FirstOrDefault();
             if (fileElement == null)
             {
                 return new ResponseModel() { Errors = { "NotFound" }, Status = false }; 

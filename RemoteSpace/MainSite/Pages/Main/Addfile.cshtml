@@ -1,45 +1,72 @@
 ﻿@page
 @model MainSite.Pages.Main.AddfileModel
 @{
-   
+
 }
 @section Scripts
 {
-    <script type="text/javascript">
-   $(document).ready(function()
-{
-    $("#uploadimg").hover(
-        function()
-        {
-            $(this).attr("src", "/Img/upload.gif");
-        },
-        function()
-        {
-            $(this).attr("src", "/Img/upload.png");
-        }                         
-    );                  
-});
+<script type="text/javascript">
+       $(document).ready(function()
+    {
+        $("#uploadimg").hover(
+            function()
+            {
+                $(this).attr("src", "/Img/upload.gif");
+            },
+            function()
+            {
+                $(this).attr("src", "/Img/upload.png");
+            }
+        );
+        $("#uploadimg").click(
+            function()
+            {
+               $("#filename").val("");
+            }
+           
+        );
+    });
+    $('#file-input').change(function() {
+      var i = $(this).prev('label').clone();
+      var file = $('#file-input')[0].files[0].name;
+      $('#filename').val(file);
+    });
 </script>
 }
-<style>
-.image-upload > input {
-    display: none;
-}
 
-</style>
 <div class="container-fluid">
-    
+
     <form enctype="multipart/form-data" method="post">
         <div class="image-upload" id="Gif">
-            <label for="file-input">
-                 <img src="~/Img/upload.png"  style="cursor:pointer,border-radius: 50%; border-color:black" id="uploadimg" />
-           </label>
-
-             <input id="file-input" asp-for="FileUpload.Submittedfile" type="file">   
-
+           <div class="row justify-content-md-center">
+                <label for="file-input">
+                    <img src="~/Img/upload.png" style="cursor:pointer;border: 3px solid ;border-radius: 50%; border-color:lightblue" id="uploadimg" width="150" height="150"/>
+                </label>
+                <input id="file-input" asp-for="FileUpload.Submittedfile" type="file" style="display: none;" />
+            </div>
+            
         </div>
-        <input asp-page-handler="Upload" class="btn" type="submit" value="Upload" />
-        <input type="hidden" value=@Model._path name="path"/>
+        <div class="row justify-content-center ">
+            <div class="col-lg-5">
+                <input class="form-control" id="filename" type="text" placeholder="Click on the icon" readonly/>
+                
+                <input type="hidden" value=@Model._path name="path" />
+            </div>
+                
+        </div>
+        <div class="row justify-content-center " style="margin-top:10px">
+            <div class="col-lg-5">
+                <textarea maxlength="5000" rows="10" name="desc" placeholder="Description"  style="width:100%"></textarea>
+            </div>
+                
+        </div>
+         <div class="row justify-content-center ">
+            <div class="col-md-auto">
+                <input asp-page-handler="Upload" class="btn" type="submit" value="Upload" />
+            </div>
+                
+        </div>
+        
     </form>
 </div>
 

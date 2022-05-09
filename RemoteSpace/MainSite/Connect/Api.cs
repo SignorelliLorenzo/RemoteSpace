@@ -98,7 +98,7 @@ namespace MainSite.Connect
             }
             return result.Content;
         }
-        public static async void DeleteFile(int id)
+        public static async Task<bool> DeleteFile(int id)
         {
             var response = await Client.DeleteAsync(_Address + id);
 
@@ -106,10 +106,11 @@ namespace MainSite.Connect
             var result = JsonConvert.DeserializeObject<ResponseModel>(await response.Content.ReadAsStringAsync());
             if (!result.Status)
             {
-                throw new Exception(result.Errors[0]);
+
+                return true;
             }
 
-            return;
+            return true;
         }
     }
 }

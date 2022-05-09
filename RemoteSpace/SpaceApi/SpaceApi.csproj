@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <Folder Include="Database\" />
+    <Folder Include="MainDir\App1%40gmail.com\" />
   </ItemGroup>
 
 </Project>

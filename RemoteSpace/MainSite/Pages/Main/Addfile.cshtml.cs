@@ -69,9 +69,9 @@ namespace MainSite.Pages.Main
             }
             catch(Exception ex)
             {
-                return RedirectToPage("Error.cshtml");
+                return RedirectToPage("../Error");
             }
-            return RedirectToPage("Index.cshtml");
+            return RedirectToPage("../Index", new { spath = path });
         }
     }
 }
