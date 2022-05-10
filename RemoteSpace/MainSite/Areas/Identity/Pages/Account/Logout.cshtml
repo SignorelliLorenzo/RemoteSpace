@@ -1,0 +1,51 @@
+﻿@page
+@model LogoutModel
+@{
+    ViewData["Title"] = "Log out";
+}
+<style>
+    img{
+         width:200px; 
+        height:200px; /*
+        border: solid 2px #ced4da;*/
+        margin-top:20px;
+    }
+    .loginbtn
+    {
+        width:150px;
+        font-weight: 300;
+        letter-spacing: 2px;  
+        font-size: 15px; 
+        color:black; 
+        background-color:white;
+        border-color: #ced4da;
+        padding:2px 12px;
+    }
+</style>
+<header>
+    @{
+        if (User.Identity.IsAuthenticated)
+        {
+            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+                <button type="submit" class="nav-link btn btn-link text-dark">Click here to Logout</button>
+            </form>
+        }
+        else
+        {
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+               <div style="text-align:center; font-weight: 300;letter-spacing: 2px;  font-size: 34px;" >SUCCESS</div>
+               <hr />
+               <div style="text-align:center; font-weight: 300;letter-spacing: 2px;  font-size: 20px;" >You are out!</div>
+
+            </div>
+            </div>
+            <div class="row justify-content-center">
+                 <img src="~/Img/LogOut.png"/>
+            </div>
+            
+           
+
+        }
+    }
+</header>

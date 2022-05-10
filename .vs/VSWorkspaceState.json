@@ -1,7 +1,13 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\RemoteSpace",
+    "\\RemoteSpace\\MainSite",
+    "\\RemoteSpace\\MainSite\\Connect",
+    "\\RemoteSpace\\MainSite\\Connect\\Models",
+    "\\RemoteSpace\\MainSite\\Pages",
+    "\\RemoteSpace\\MainSite\\Pages\\Main"
   ],
-  "SelectedNode": "\\RemoteSpace.sln",
+  "SelectedNode": "\\RemoteSpace\\MainSite\\Connect\\Models\\FileElement.cs",
   "PreviewInSolutionExplorer": false
 }

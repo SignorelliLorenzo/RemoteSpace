@@ -36,7 +36,7 @@ namespace MainSite.Pages
             }
             if (spath!= "\\" + User.Identity.Name)
             {
-                OldPath = spath.Substring(0,spath.IndexOf("\\"+spath.Split("\\").Last()));
+                OldPath = spath.Substring(0,spath.Length-("\\"+spath.Split("\\").Last()).Length);
             }
             path = spath;
             
@@ -56,7 +56,7 @@ namespace MainSite.Pages
             }
             catch(Exception ex) 
             {
-                if(ex.InnerException.Message=="NotFound" && path== "\\Admin@admin.com")
+                if(ex.InnerException.Message=="NotFound" && path== "\\" + User.Identity.Name)
                 {
                     if (!Api.AddDir(User.Identity.Name, "", User.Identity.Name).Result)
                     {
@@ -105,7 +105,7 @@ namespace MainSite.Pages
                 var data = Api.GetFile((int)Id).Result;
                 return File(data, "application/octet-stream", name);
             }
-            if(string.IsNullOrWhiteSpace(DirName))
+            if(string.IsNullOrWhiteSpace(DirName) || DirName.Contains("\\"))
             {
                 return RedirectToPage("/Index", new { spath = path });
             }    
