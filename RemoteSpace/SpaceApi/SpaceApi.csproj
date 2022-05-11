@@ -27,6 +27,7 @@
   <ItemGroup>
     <Folder Include="Database\" />
     <Folder Include="MainDir\App1%40gmail.com\Admin%40admin.com\alberto\" />
+    <Folder Include="MainDir\App1%40gmail.com\Admin%40admin.com\a\Gennaro\" />
   </ItemGroup>
 
 </Project>

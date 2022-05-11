@@ -19,6 +19,7 @@ namespace MainSite.Pages
         private readonly UserManager<IdentityUser> _userManager;
         public string path;
         public string OldPath;
+        public string Error;
         public IndexModel(ILogger<IndexModel> logger, UserManager<IdentityUser> userManager)
         {
             _logger = logger;
@@ -27,9 +28,9 @@ namespace MainSite.Pages
         }
         [BindProperty]
         public List<FileDisplay> Filelist { get; set; }
-        public async Task<IActionResult> OnGet(string spath)
+        public async Task<IActionResult> OnGet(string spath,string error)
         {
-            
+            Error = error;
             if (string.IsNullOrWhiteSpace(spath))
             {
                 spath = "\\" + User.Identity.Name;
@@ -46,7 +47,7 @@ namespace MainSite.Pages
             }
             if (!path.StartsWith("\\"+User.Identity.Name))
             {
-                return RedirectToPage("/Error");
+                return RedirectToPage("/Error",new { Error="Path not valid" });
             }
             
             try
@@ -60,12 +61,12 @@ namespace MainSite.Pages
                 {
                     if (!Api.AddDir(User.Identity.Name, "", User.Identity.Name).Result)
                     {
-                        throw new Exception("Failed to create root dir");
+                        return RedirectToPage("/Error", new { Error = "Failed to create root dir" });
                     }
                 }
                 else
                 {
-                    throw ex.InnerException;
+                    return RedirectToPage("/Error", new { Error = ex.InnerException.Message });
                 }
             }
             return Page();
@@ -78,7 +79,7 @@ namespace MainSite.Pages
             }
             if (!path.StartsWith("\\" + User.Identity.Name))
             {
-                return RedirectToPage("/Error");
+                return RedirectToPage("/Error", new { Error = "Path not valid" });
             }
             if(btn=="Delete")
             {
@@ -115,17 +116,17 @@ namespace MainSite.Pages
                 {
                     if (!Api.AddDir(User.Identity.Name, "", User.Identity.Name).Result)
                     {
-                        throw new Exception("Failed to create root dir");
+                        return RedirectToPage("/Error", new { Error = "Failed to create root dir" });
                     }
                 }
                 if (!Api.AddDir(DirName,path, User.Identity.Name).Result)
                 {
-                    throw new Exception("Failed");
+                    return RedirectToPage("/Index", new { spath = path, error = "Failed to create dir" });
                 }
             }
             catch (Exception ex)
             {
-                return RedirectToPage("/Error");
+                return RedirectToPage("/Error", new { Error = ex.Message });
             }
             return RedirectToPage("/Index", new {spath=path});
         }

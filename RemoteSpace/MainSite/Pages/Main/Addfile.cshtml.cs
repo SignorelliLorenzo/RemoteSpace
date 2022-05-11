@@ -58,18 +58,18 @@ namespace MainSite.Pages.Main
                 {
                     if(!Api.AddDir(User.Identity.Name,"", User.Identity.Name).Result)
                     {
-                        throw new Exception("Failed to create root dir");
+                        return RedirectToPage("../Error", new { Error = "Failed to create root dir" });
                     }
                 }    
                 var response = Api.AddFile(request).Result;
                 if(response.Count==0)
                 {
-                    throw new Exception("Api not on");
+                    RedirectToPage("../Error", new { Error = "Service unavailable" });
                 }
             }
             catch(Exception ex)
             {
-                return RedirectToPage("../Error");
+                RedirectToPage("../Error", new { Error = ex.Message });
             }
             return RedirectToPage("../Index", new { spath = path });
         }

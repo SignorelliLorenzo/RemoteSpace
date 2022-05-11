@@ -16,7 +16,7 @@ namespace MainSite.Pages
         public string RequestId { get; set; }
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-
+        public string _Error;
         private readonly ILogger<ErrorModel> _logger;
 
         public ErrorModel(ILogger<ErrorModel> logger)
@@ -24,8 +24,9 @@ namespace MainSite.Pages
             _logger = logger;
         }
 
-        public void OnGet()
+        public void OnGet(string Error)
         {
+            _Error = Error;
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
         }
     }
