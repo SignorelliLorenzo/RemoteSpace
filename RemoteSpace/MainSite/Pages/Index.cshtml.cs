@@ -85,7 +85,7 @@ namespace MainSite.Pages
             {
                 if (Id == null)
                 {
-                    return RedirectToPage("/Index", new { spath = path });
+                    return RedirectToPage("/Index", new { spath = path , error="Not found"}) ;
                 }
 
                 var RESULT = Api.DeleteFile((int)Id).Result;

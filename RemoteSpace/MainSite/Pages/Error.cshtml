@@ -3,14 +3,17 @@
 @{
     ViewData["Title"] = "Error";
 }
+<div  class="row justify-content-center">
+    <p>
+    <strong class="text-danger"  style="text-align:center; font-weight: 300;letter-spacing: 2px;  font-size: 34px;">Error: </strong>  <error class="text-black" style="text-align:center; font-weight: 200;letter-spacing: 2px;  font-size: 20px;" width="100 px">@Model._Error</error>
+</p>
+</div>
+<p style="text-align:center; font-weight: 200;letter-spacing: 2px;  font-size: 15px;color:darkgray" width="100 px" >An error occurred while processing your request.</p>
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
-<div class="text-black" width="100 px">@Model._Error</div>
 
 @if (Model.ShowRequestId)
 {
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+    <p  style="text-align:center;">
+        <strong style="font-weight: 200;letter-spacing: 2px;  font-size: 15px;">Request ID:</strong> <code>@Model.RequestId</code>
     </p>
 }

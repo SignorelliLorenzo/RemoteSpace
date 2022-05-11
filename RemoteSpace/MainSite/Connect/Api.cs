@@ -22,8 +22,6 @@ namespace MainSite.Connect
         }
         public static async Task<byte[]> GetFile(int id)
         {
-            
-
             HttpResponseMessage response = await Client.GetAsync(_Address+ "file/"+id);
             response.EnsureSuccessStatusCode();
             var result = JsonConvert.DeserializeObject<ResponseFile>(await response.Content.ReadAsStringAsync());
@@ -107,7 +105,7 @@ namespace MainSite.Connect
             if (!result.Status)
             {
 
-                return true;
+                return false;
             }
 
             return true;

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MainSite.Pages.Main
 {
@@ -22,6 +23,7 @@ namespace MainSite.Pages.Main
         public IFormFile Submittedfile { get; set; }
     }
     [DisableRequestSizeLimit]
+    [Authorize]
     public class AddfileModel : PageModel
     {
         private readonly UserManager<IdentityUser> _UserManager;
