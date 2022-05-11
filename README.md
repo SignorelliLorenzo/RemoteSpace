@@ -1,1 +1,6 @@
-# RemoteSpace[Cloud Computing Technology PowerPoint Templates.pdf](https://github.com/SignorelliLorenzo/RemoteSpace/files/8673164/Cloud.Computing.Technology.PowerPoint.Templates.pdf)
+![Diapositiva1](https://user-images.githubusercontent.com/59918176/167941427-74d5b0df-9c51-45ed-86cb-fe71f5d4eeae.JPG)
+![Diapositiva2](https://user-images.githubusercontent.com/59918176/167941487-0db1b255-d365-4c53-8ab3-02a446b94692.JPG)
+![Diapositiva3](https://user-images.githubusercontent.com/59918176/167941489-14a43adc-a908-4b49-9ae9-b602b26bb6eb.JPG)
+![Diapositiva4](https://user-images.githubusercontent.com/59918176/167941493-e1946ca1-cfb5-4932-8a93-839e660d6981.JPG)
+![Diapositiva5](https://user-images.githubusercontent.com/59918176/167941496-441f1862-8072-4dc7-9507-38fc40d09f2c.JPG)
+![Diapositiva6](https://user-images.githubusercontent.com/59918176/167941499-e1d7bd2a-8ecb-43d9-9c29-7df78e8b963e.JPG)
