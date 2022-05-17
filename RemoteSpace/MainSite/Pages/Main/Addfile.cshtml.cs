@@ -28,8 +28,8 @@ namespace MainSite.Pages.Main
     [Authorize]
     public class AddfileModel : PageModel
     {
-        private readonly UserManager<UserIdentityCompleted> _UserManager;
-        public AddfileModel(UserManager<UserIdentityCompleted> userManager)
+        private readonly UserManager<IdentityUser> _UserManager;
+        public AddfileModel(UserManager<IdentityUser> userManager)
         {
             _UserManager = userManager;
         }
@@ -52,10 +52,10 @@ namespace MainSite.Pages.Main
             request.FileInfo = new FileElementSend() { Name= FileUpload.Submittedfile.FileName , Path= path, Owner= User.Identity.Name,Description= desc ,IsDirectory=false,Shared=false};
             using (var ms = new MemoryStream())
             {
-                var user = _UserManager.GetUserAsync(User).Result;
+                var user = _UserManager.GetUserId(User);
                 FileUpload.Submittedfile.CopyTo(ms);
                
-                request.Content = Convert.ToBase64String(FileData.Encrypt(ms.ToArray(), user.Key, user.IV));
+                request.Content = Convert.ToBase64String(FileData.Encrypt(ms.ToArray(), user));
                 // act on the Base64 data
             }
             try

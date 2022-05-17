@@ -6,9 +6,9 @@ using System.Text;
 
 namespace MainSite.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<UserIdentityCompleted>
+    public class ApplicationDbContext : IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public ApplicationDbContext(DbContextOptions options)
             : base(options)
         {
         }
