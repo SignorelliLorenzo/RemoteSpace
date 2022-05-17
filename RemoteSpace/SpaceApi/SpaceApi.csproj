@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="MainDir\App1%40gmail.com\**" />
+    <Content Remove="MainDir\App1%40gmail.com\**" />
+    <EmbeddedResource Remove="MainDir\App1%40gmail.com\**" />
+    <None Remove="MainDir\App1%40gmail.com\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Database\Token.db-wal" />
   </ItemGroup>
 
@@ -26,9 +33,6 @@
 
   <ItemGroup>
     <Folder Include="Database\" />
-    <Folder Include="MainDir\App1%40gmail.com\Admin%40admin.com\alberto\" />
-    <Folder Include="MainDir\App1%40gmail.com\Admin%40admin.com\a\gennaro\" />
-    <Folder Include="MainDir\App1%40gmail.com\Admin%40admin.com\a\Gennaro\" />
   </ItemGroup>
 
 </Project>

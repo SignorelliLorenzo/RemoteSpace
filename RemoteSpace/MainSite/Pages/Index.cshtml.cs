@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using MainSite.Connect;
 using MainSite.Connect.Models;
+using MainSite.Data;
+using MainSite.Connect.Cryptography;
 
 namespace MainSite.Pages
 {
@@ -16,11 +18,11 @@ namespace MainSite.Pages
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<UserIdentityCompleted> _userManager;
         public string path;
         public string OldPath;
         public string Error;
-        public IndexModel(ILogger<IndexModel> logger, UserManager<IdentityUser> userManager)
+        public IndexModel(ILogger<IndexModel> logger, UserManager<UserIdentityCompleted> userManager)
         {
             _logger = logger;
             _userManager = userManager;
@@ -103,8 +105,10 @@ namespace MainSite.Pages
                 {
                     return RedirectToPage("/Index", new { spath = path });
                 }
+                var user = _userManager.GetUserAsync(User).Result;
                 var data = Api.GetFile((int)Id).Result;
-                return File(data, "application/octet-stream", name);
+               
+                return File(FileData.Decrypt(data, user.Key, user.IV), "application/octet-stream", name);
             }
             if(string.IsNullOrWhiteSpace(DirName) || DirName.Contains("\\"))
             {
