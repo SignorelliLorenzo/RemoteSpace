@@ -86,7 +86,8 @@ namespace MainSite.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    var user = _userManager.GetUserId(User);
+                    var a = User.Identity.Name;
+                    var user = _userManager.FindByEmailAsync(Input.Email).Result.Id;
                     FileData.AddPass(Input.Password, user);
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);

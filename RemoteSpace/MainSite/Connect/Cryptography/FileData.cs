@@ -9,27 +9,35 @@ using System.Threading.Tasks;
 
 namespace MainSite.Connect.Cryptography
 {
-    public  class FileData:IDisposable
+    public class FileData : IDisposable
     {
-        static private Dictionary<string, SecureString> UserPass=new Dictionary<string,SecureString>();
+        static private Dictionary<string,  SecureString[]> UserPass=new Dictionary<string, SecureString[]>();
         public static void AddPass(string password, string UserId)
         {
             if (password == null)
                 throw new ArgumentNullException("password");
 
-            var securePassword = new SecureString();
-
-            foreach (char c in password)
-                securePassword.AppendChar(c);
-
-            UserPass.Add(UserId, securePassword);
+            var secureKey = new SecureString();
+            var secureIV = new SecureString();
+            byte[] passwordBytes = UnicodeEncoding.ASCII.GetBytes(password);
+            string Key = Convert.ToBase64String(SHA256Managed.Create().ComputeHash(passwordBytes));
+            string IV = Convert.ToBase64String(MD5.Create().ComputeHash(passwordBytes));
+            foreach (char c in Key)
+                secureKey.AppendChar(c);
+            foreach (char c in IV)
+                secureIV.AppendChar(c);
+            
+            UserPass.Add(UserId, new SecureString[2] { secureKey, secureIV });
         }
         public static void RemovePass(string UserId)
         {
             if (UserId == null)
                 throw new ArgumentNullException("UserId");
 
-            
+            foreach(var secure in UserPass[UserId])
+            {
+                secure.Dispose();
+            }
             UserPass.Remove(UserId);
         }
         public static byte[] Encrypt(byte[] Data, string UserID)
@@ -38,10 +46,9 @@ namespace MainSite.Connect.Cryptography
             {
                 throw new ArgumentNullException(nameof(Data));
             }
-            var password  = new System.Net.NetworkCredential(string.Empty, UserPass[UserID]).Password; 
-            byte[] passwordBytes = UnicodeEncoding.ASCII.GetBytes(password);
-            byte[] Key = SHA256Managed.Create().ComputeHash(passwordBytes);
-            byte[] IV = MD5.Create().ComputeHash(passwordBytes);
+
+            var IV =Convert.FromBase64String( new System.Net.NetworkCredential(string.Empty, UserPass[UserID][1]).Password);
+            var Key= Convert.FromBase64String(new System.Net.NetworkCredential(string.Empty, UserPass[UserID][0]).Password);
             using (var rijndaelManaged = new RijndaelManaged())
             {
                 rijndaelManaged.KeySize = Key.Length * 8;
@@ -71,11 +78,9 @@ namespace MainSite.Connect.Cryptography
             {
                 return Data;
             }
-            var password = new System.Net.NetworkCredential(string.Empty, UserPass[UserID]).Password;
-            byte[] passwordBytes = UnicodeEncoding.ASCII.GetBytes(password);
-            byte[] Key = SHA256Managed.Create().ComputeHash(passwordBytes);
-            byte[] IV = MD5.Create().ComputeHash(passwordBytes);
-          
+            var IV = Convert.FromBase64String(new System.Net.NetworkCredential(string.Empty, UserPass[UserID][1]).Password);
+            var Key = Convert.FromBase64String(new System.Net.NetworkCredential(string.Empty, UserPass[UserID][0]).Password);
+
             using (var rijndaelManaged = new RijndaelManaged())
             {
                 

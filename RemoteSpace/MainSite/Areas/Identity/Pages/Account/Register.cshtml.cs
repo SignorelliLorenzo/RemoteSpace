@@ -103,6 +103,7 @@ namespace MainSite.Areas.Identity.Pages.Account
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
+
                         FileData.AddPass(Input.Password,user.Id );
                         return LocalRedirect(returnUrl);
                     }
