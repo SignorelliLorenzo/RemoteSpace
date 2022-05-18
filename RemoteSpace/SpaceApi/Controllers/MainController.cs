@@ -269,6 +269,22 @@ namespace SpaceApi.Controllers
             }
             return new ResponseModel() { Errors = new List<string>() { }, Status = true };
         }
-
+        [HttpPut("{id}-{NewName}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ResponseModel> Rename(int id,string NewName)
+        {
+          
+        }
+        public void ChangePathRecursive(FileElement file, string NewPath)
+        {
+            if(file.IsDirectory)
+            {
+                var items=_context.EleFiles.Where(x => x.Path == file.Path + "\\" + file.Name).ToList();
+                foreach(var item in items)
+                {
+                    ChangePathRecursive(item, NewPath + "\\" + item.Name);
+                }
+            }
+        }
     }
 }
