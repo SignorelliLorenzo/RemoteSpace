@@ -32,6 +32,11 @@ namespace MainSite
         public void ConfigureServices(IServiceCollection services)
         {
             
+            if(System.IO.File.Exists("LastStart") && System.IO.File.ReadAllText("LastStart")!= DateTime.Now.ToString())
+            {
+
+            }
+            System.IO.File.WriteAllText("LastStart", DateTime.Now.ToString());
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
