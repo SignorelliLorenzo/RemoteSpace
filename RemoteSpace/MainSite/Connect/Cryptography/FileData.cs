@@ -104,6 +104,14 @@ namespace MainSite.Connect.Cryptography
 
         public void Dispose()
         {
+            foreach (var UserId in UserPass.Keys)
+            {
+                foreach (var secure in UserPass[UserId])
+                {
+                    secure.Dispose();
+                }
+            }
+           
             UserPass.Clear();
         }
 

@@ -31,12 +31,6 @@ namespace MainSite
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
-            if(System.IO.File.Exists("LastStart") && System.IO.File.ReadAllText("LastStart")!= DateTime.Now.ToString())
-            {
-
-            }
-            System.IO.File.WriteAllText("LastStart", DateTime.Now.ToString());
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
