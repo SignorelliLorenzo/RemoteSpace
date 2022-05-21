@@ -273,7 +273,7 @@ namespace SpaceApi.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ResponseModel> Rename(int id,string NewName)
         {
-          
+            return new ResponseModel() { Errors = new List<string>() { }, Status = true };
         }
         public void ChangePathRecursive(FileElement file, string NewPath)
         {

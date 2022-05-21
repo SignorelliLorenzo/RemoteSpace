@@ -56,13 +56,13 @@
         {
             if (item.IsDirectory)
             {
-                <tr  style="cursor:pointer">
-                    <td onclick="window.location='?spath=@item.Path.Replace("\\","\\\\")\\@item.Name';"><img src="/Img/folder.png" width="40" height="40" /></td>
-                    <td onclick="window.location='?spath=@item.Path.Replace("\\","\\\\")\\@item.Name';">@item.Name</td>
-                    <td onclick="window.location='?spath=@item.Path.Replace("\\","\\\\")\\@item.Name';">@item.UploadDate</td>
-                    <td onclick="window.location='?spath=@item.Path.Replace("\\","\\\\")\\@item.Name';"></td>
+                <tr onclick="window.location='?spath=@item.Path.Replace("\\","\\\\")\\@item.Name';" style="cursor:pointer" >
+                    <td ><img src="/Img/folder.png" width="40" height="40" /></td>
+                    <td >@item.Name</td>
+                    <td >@item.UploadDate</td>
+                    <td ></td>
                     <td>
-                                         <input type="image" src="~/Img/delete.png" width="30" height="30" style="margin-left:25px" data-toggle="modal" data-target="#ModalDelete@(item.Id)" />
+                                         <input id="DeleteDir" type="image" src="~/Img/delete.png" width="30" height="30" style="margin-left:25px"  data-target="#ModalDelete@(item.Id)" />
                                 <!-- Modal delete -->
                         <div class="modal fade" id="ModalDelete@(item.Id)" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -110,7 +110,7 @@
                                 </form>
                             </div>
                             <div class="col-xs-auto">
-                                <input type="image" src="~/Img/delete.png" width="30" height="30" style="margin-left:10px" data-toggle="modal" data-target="#ModalDelete@(item.Id)" />
+                                <input  type="image" src="~/Img/delete.png" width="30" height="30" style="margin-left:10px" data-toggle="modal" data-target="#ModalDelete@(item.Id)" />
                                 <!-- Modal delete -->
                         <div class="modal fade" id="ModalDelete@(item.Id)" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -205,6 +205,18 @@
 <script type="text/javascript">
     $(window).on('load', function () {
         $('#ErrorModal').modal('show');
+    });
+    $(document).ready(function () {
+        var field = $('.my-text');
+        $('#theLabel1').click(function () {
+            $("#theLabel1").text('hello there');
+            field.insertBefore('#theLabel1');
+        });
+        var Btn = $('#DeleteDir');
+        $('#theLabel1').click(function () {
+            $("#theLabel1").text('hello there');
+            field.insertBefore('#theLabel1');
+        });
     });
 </script>
     }
