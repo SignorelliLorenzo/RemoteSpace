@@ -73,7 +73,7 @@ namespace MainSite.Pages
             }
             return Page();
         }
-        public async Task<IActionResult> OnPost(string DirName,string path, string btn, int? Id,string name)
+        public async Task<IActionResult> OnPost(string DirName,string path, string btn, int? Id,string name,string NewName)
         {
             if (!path.StartsWith("\\"))
             {
@@ -83,13 +83,21 @@ namespace MainSite.Pages
             {
                 return RedirectToPage("/Error", new { Error = "Path not valid" });
             }
-            if(btn=="Delete")
+            if(NewName!=null)
             {
-                if (Id == null)
+                if (!Api.Validate(Id, User.Identity.Name).Result)
                 {
-                    return RedirectToPage("/Index", new { spath = path , error="Not found"}) ;
+                    return RedirectToPage("/Index", new { spath = path, error = "Not valid" });
                 }
-
+                Api.Rename(NewName, Id);
+            }
+            if (btn=="Delete")
+            {
+                if (!Api.Validate(Id, User.Identity.Name).Result)
+                {
+                    return RedirectToPage("/Index", new { spath = path , error="Not valid"}) ;
+                }
+                
                 var RESULT = Api.DeleteFile((int)Id).Result;
 
                 if (!RESULT)
@@ -104,6 +112,10 @@ namespace MainSite.Pages
                 if (Id == null)
                 {
                     return RedirectToPage("/Index", new { spath = path });
+                }
+                if (!Api.Validate(Id, User.Identity.Name).Result)
+                {
+                    return RedirectToPage("/Index", new { spath = path, error = "Not valid" });
                 }
                 var user = _userManager.GetUserId(User);
                 var data = Api.GetFile((int)Id).Result;

@@ -102,8 +102,12 @@
                 <tr>
                     <td><img src="/Img/file.png" width="40" height="40" /></td>
                     <td>
-                        <lable id="LabelName" ref-id="#Mod@(item.Id)">@item.Name</lable>
-                        <input id="InputName" ref-id="Mod@(item.Id)" type="text" style="display:none" />
+                        <lable id="LabelName" ref-id="Mod@(item.Id)">@item.Name</lable>
+                        <form method="post" ref-id="Mod@(item.Id)">
+                            <input name="NewName" id="InputName" ref-id="Mod@(item.Id)" type="text" style="display:none" />
+                            <input type="hidden" value=@Model.path name="path" />
+                            <input type="hidden" value=@item.Id name="Id" />
+                        </form>
                     </td>
                     <td>@item.UploadDate</td>
                     <td>@item.Weight</td>
@@ -219,27 +223,42 @@
 
 </script>
     }
-<script type="text/javascript">
+<script >
     $(document).ready(function () {
-
         var Btn = $('#DeleteDir');
-        var Modal= Btn.attr('model-target')
+        var Modal = Btn.attr('model-target');
         Btn.click(function (event) {
             event.stopPropagation();
             $(Modal).modal('show');
 
         });
 
+        $('#LabelName').each(function () {
+            var input = $(this).attr('ref-id');
+            $(this).on("click", function () {
+                $('input[ref-id=' + input + ']').val($(this).text());
+                $(this).hide();
+                $('input[ref-id=' + input + ']').show();
+                $('input[ref-id=' + input + ']').focus();
+                $('input[ref-id=' + input + ']').select();
+            });
+        });
+        $('#InputName').each(function () {
+            var lable = $(this).attr('ref-id');
+            $(this).keydown((e) => {
+                alert(e.key);
+                if (e.key === "Enter") {
+                    $('form[ref-id=' + input + ']').submit();
+                }
+                if (e.key === "Escape") {
+                    $(this).hide();
+                    $(this).blur();
+                    $('lable[ref-id=' + lable + ']').show();
 
-        $('#LabelName').each(function() {
-        var input=this.attr('ref-id')
-        $(this).on("click", function(){
-            $('input[ref-id='+input+']').first().show();
-            $(this).hide();
-            $(input).val($(this).text)
+                }
+            })
         });
     });
-    }
 </script>
 }
 

@@ -269,6 +269,19 @@ namespace SpaceApi.Controllers
             }
             return new ResponseModel() { Errors = new List<string>() { }, Status = true };
         }
+        [HttpGet("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ResponseFiles> GetFileElement(int id)
+        {
+            var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
+            var fileElements = _context.EleFiles.Where(x => x.Id == id && x.User == user).ToList();
+            if (fileElements.Count() == 0)
+            {
+                return new ResponseFiles() { Errors = new List<string>() { "NotFound" },Content=null, Status = false };
+            }
+            
+            return new ResponseFiles() { Errors = new List<string>() { }, Content = fileElements, Status = true };
+        }
         [HttpPut("{id}-{NewName}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ResponseModel> Rename(int id,string NewName)

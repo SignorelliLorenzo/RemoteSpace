@@ -96,8 +96,24 @@ namespace MainSite.Connect
             }
             return result.Content;
         }
+        public static async Task<bool> Validate(int? id, string owner)
+        {
+            if(id==null)
+            {
+                return false;
+            }
+            var request = await Client.GetAsync(_Address + id);
+            request.EnsureSuccessStatusCode();
+            var result= JsonConvert.DeserializeObject<ResponseFiles>(await request.Content.ReadAsStringAsync());
+            if(result.Content==null || result.Content.First().Owner!=owner)
+            {
+                return false;
+            }
+            return true;
+        }
         public static async Task<bool> DeleteFile(int id)
         {
+            
             var response = await Client.DeleteAsync(_Address + id);
 
             response.EnsureSuccessStatusCode();
@@ -109,6 +125,15 @@ namespace MainSite.Connect
             }
 
             return true;
+        }
+        public static async void  Rename (string newname, int? Id)
+        {
+            
+            if (Id == null)
+            {
+                throw new NullReferenceException("ID");
+            }
+            
         }
     }
 }
