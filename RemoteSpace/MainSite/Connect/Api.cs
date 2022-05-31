@@ -133,7 +133,9 @@ namespace MainSite.Connect
             {
                 throw new NullReferenceException("ID");
             }
-            
+            var response = await Client.PutAsync(_Address + newname + "-"+ Id);
+
+            response.EnsureSuccessStatusCode();
         }
     }
 }

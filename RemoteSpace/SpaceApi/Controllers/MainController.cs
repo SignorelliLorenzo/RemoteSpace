@@ -20,7 +20,7 @@ namespace SpaceApi.Controllers
 {
     [Route("api")]
     [ApiController]
-    
+
     public class MainController : ControllerBase
     {
         private readonly AppFileDbContext _context;
@@ -35,7 +35,7 @@ namespace SpaceApi.Controllers
         public async Task<bool> PathExists(string path)
         {
             path = path.Replace("_5", "\\");
-            var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName ;
+            var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
             var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
             if (!path.StartsWith('\\'))
             {
@@ -43,12 +43,10 @@ namespace SpaceApi.Controllers
             }
             var completepath = basedir + path.Trim();
 
-            if ((System.IO.File.Exists(completepath) || System.IO.Directory.Exists(completepath)) &&  _context.EleFiles.Where(x=>x.Path+x.Name==path && x.User== user).Any())
+            if ((System.IO.File.Exists(completepath) || System.IO.Directory.Exists(completepath)) && _context.EleFiles.Where(x => x.Path + x.Name == path && x.User == user).Any())
             {
                 return true;
-
             }
-
             return false;
         }
         [HttpGet("Dir/{path}")]
@@ -56,23 +54,23 @@ namespace SpaceApi.Controllers
         public async Task<ResponseFiles> GetDir(string path)
         {
             path = path.Replace("_5", "\\");
-            var basedir = Environment.GetEnvironmentVariable("MainPath")+"\\"+ _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName; 
+            var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
             if (!path.StartsWith('\\'))
             {
-                path = "\\"+path ;
+                path = "\\" + path;
             }
             var completepath = basedir + path.Trim();
             var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
 
             if (System.IO.File.Exists(completepath))
             {
-                return new ResponseFiles() { Errors = new List<string> { "IsAFile" }, Status = true, Content = _context.EleFiles.Where(x => x.Path == path.Substring(0, path.IndexOf(Path.GetDirectoryName(completepath)))&& x.User == user).ToList() };
+                return new ResponseFiles() { Errors = new List<string> { "IsAFile" }, Status = true, Content = _context.EleFiles.Where(x => x.Path == path.Substring(0, path.IndexOf(Path.GetDirectoryName(completepath))) && x.User == user).ToList() };
 
             }
             else if (System.IO.Directory.Exists(completepath))
             {
-                
-                var x= new ResponseFiles() { Errors = null, Status = true, Content = (_context.EleFiles.Where(x => x.Path == path && x.User == user).ToList())};
+
+                var x = new ResponseFiles() { Errors = null, Status = true, Content = (_context.EleFiles.Where(x => x.Path == path && x.User == user).ToList()) };
                 return x;
             }
             return new ResponseFiles() { Errors = new List<string>() { "NotFound" }, Status = false, Content = null };
@@ -82,14 +80,14 @@ namespace SpaceApi.Controllers
         public async Task<ResponseFile> GetFile(int id)
         {
             var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
-            var fileElement = _context.EleFiles.Where(x => x.Id == id && x.User ==user).FirstOrDefault();
+            var fileElement = _context.EleFiles.Where(x => x.Id == id && x.User == user).FirstOrDefault();
             if (fileElement == null)
             {
-                return new ResponseFile() { Errors = { "NotFound" }, Status = false, Content=null };
+                return new ResponseFile() { Errors = { "NotFound" }, Status = false, Content = null };
             }
             var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
             string CompletePath = basedir + fileElement.Path + "\\" + fileElement.Name;
-            if(!System.IO.File.Exists(CompletePath))
+            if (!System.IO.File.Exists(CompletePath))
             {
                 _context.EleFiles.Remove(fileElement);
                 return new ResponseFile() { Errors = { "FileDoesNotExist" }, Status = false, Content = null };
@@ -108,22 +106,18 @@ namespace SpaceApi.Controllers
             FileElement CompleteFile;
             if (fileElement.FileInfo.IsDirectory)
             {
-                CompleteFile = new FileElement(fileElement.FileInfo, 0,user );
+                CompleteFile = new FileElement(fileElement.FileInfo, 0, user);
             }
             else
             {
                 CompleteFile = new FileElement(fileElement.FileInfo, fileElement.Content.Count(), user);
             }
-            
-            
-           
-
             var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
             if (!System.IO.Directory.Exists(basedir))
             {
                 Directory.CreateDirectory(basedir);
             }
-            var completepath = basedir + CompleteFile.Path +"\\"+ CompleteFile.Name;
+            var completepath = basedir + CompleteFile.Path + "\\" + CompleteFile.Name;
             try
             {
                 Path.GetFullPath(completepath);
@@ -134,14 +128,10 @@ namespace SpaceApi.Controllers
             }
             if (System.IO.File.Exists(completepath))
             {
-                
-               
                 return new ResponseFiles() { Errors = new List<string>() { "FileAlreadyExists" }, Status = false, Content = null };
             }
-            else if(Directory.Exists(completepath))
+            else if (Directory.Exists(completepath))
             {
-
-                
                 return new ResponseFiles() { Errors = new List<string>() { "DirAlreadyExists" }, Status = false, Content = null };
             }
             if (fileElement.FileInfo.IsDirectory)
@@ -152,16 +142,12 @@ namespace SpaceApi.Controllers
                 }
                 catch (IOException ex)
                 {
-
-
                     return new ResponseFiles() { Errors = new List<string>() { "NomeGiàEsistente:" + ex.Message }, Status = false, Content = null };
                 }
                 catch (Exception ex)
                 {
-
                     return new ResponseFiles() { Errors = new List<string> { ex.Message }, Status = false, Content = null };
                 }
-
             }
             else
             {
@@ -173,23 +159,20 @@ namespace SpaceApi.Controllers
             {
                 _context.EleFiles.Add(CompleteFile);
                 _context.SaveChanges();
-               
             }
             catch (Exception ex)
             {
                 System.IO.File.Delete(completepath);
                 return new ResponseFiles() { Errors = new List<string>() { "FileInfoNotValid:" + ex.Message }, Status = false, Content = null };
             }
-            
             return new ResponseFiles() { Errors = null, Status = true, Content = new List<FileElement> { CompleteFile } };
-
         }
-        private bool RemoveDir (string rootpath,int id,bool save)
+        private bool RemoveDir(string rootpath, int id, bool save)
         {
             bool failed = false;
-            var dir=_context.EleFiles.Find(id);
-            var partialpath = rootpath + dir.Path+"\\" + dir.Name;
-            if(!Directory.Exists(partialpath))
+            var dir = _context.EleFiles.Find(id);
+            var partialpath = rootpath + dir.Path + "\\" + dir.Name;
+            if (!Directory.Exists(partialpath))
             {
                 return false;
             }
@@ -204,37 +187,32 @@ namespace SpaceApi.Controllers
                         failed = true;
                         break;
                     }
-                    else if(!result)
+                    else if (!result)
                     {
                         return false;
                     }
                 }
                 else
                 {
-                    if(System.IO.File.Exists(partialpath + "\\" + element.Name))
+                    if (System.IO.File.Exists(partialpath + "\\" + element.Name))
                     {
                         _context.EleFiles.Remove(element);
-
                     }
                     else
                     {
                         return false;
                     }
-                    
                 }
-
             }
-
             _context.EleFiles.Remove(dir);
             if (save && !failed)
             {
                 _context.SaveChanges();
-                DirectoryInfo todelete=new DirectoryInfo(partialpath);
+                DirectoryInfo todelete = new DirectoryInfo(partialpath);
                 todelete.Delete(true);
             }
-            else if(save)
+            else if (save)
             {
-
                 _context.ChangeTracker.Clear();
                 return false;
             }
@@ -246,26 +224,25 @@ namespace SpaceApi.Controllers
         public async Task<ResponseModel> DeleteFileElement(int id)
         {
             var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
-            var fileElement =  _context.EleFiles.Where(x=>x.Id==id && x.User== user).FirstOrDefault();
+            var fileElement = _context.EleFiles.Where(x => x.Id == id && x.User == user).FirstOrDefault();
             if (fileElement == null)
             {
-                return new ResponseModel() { Errors = new List<string>() { "NotFound" }, Status = false }; 
+                return new ResponseModel() { Errors = new List<string>() { "NotFound" }, Status = false };
             }
             var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
-            if(fileElement.IsDirectory)
+            if (fileElement.IsDirectory)
             {
-               if( RemoveDir(basedir, fileElement.Id, true))
+                if (RemoveDir(basedir, fileElement.Id, true))
                 {
                     return new ResponseModel() { Errors = new List<string>() { "failed to delete dir" }, Status = true };
                 }
             }
-            else 
+            else
             {
                 string CompletePath = basedir + "\\" + fileElement.Path + "\\" + fileElement.Name;
                 _context.EleFiles.Remove(fileElement);
                 await _context.SaveChangesAsync();
                 System.IO.File.Delete(CompletePath);
-               
             }
             return new ResponseModel() { Errors = new List<string>() { }, Status = true };
         }
@@ -277,27 +254,67 @@ namespace SpaceApi.Controllers
             var fileElements = _context.EleFiles.Where(x => x.Id == id && x.User == user).ToList();
             if (fileElements.Count() == 0)
             {
-                return new ResponseFiles() { Errors = new List<string>() { "NotFound" },Content=null, Status = false };
+                return new ResponseFiles() { Errors = new List<string>() { "NotFound" }, Content = null, Status = false };
             }
-            
+
             return new ResponseFiles() { Errors = new List<string>() { }, Content = fileElements, Status = true };
         }
         [HttpPut("{id}-{NewName}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ResponseModel> Rename(int id,string NewName)
+        public async Task<ResponseModel> Rename(int id, string NewName)
         {
-            return new ResponseModel() { Errors = new List<string>() { }, Status = true };
-        }
-        public void ChangePathRecursive(FileElement file, string NewPath)
-        {
-            if(file.IsDirectory)
+            
+            var file = _context.EleFiles.Where(x => x.Id == id).First();
+
+            var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
+            string CompletePath = basedir + "\\" + file.Path + "\\" + file.Name;
+            if (NewName.Contains('\\') || _context.EleFiles.Where(x => x.Name == NewName && x.Path== file.Path).Any())
             {
-                var items=_context.EleFiles.Where(x => x.Path == file.Path + "\\" + file.Name).ToList();
-                foreach(var item in items)
+                return new ResponseModel() { Errors = new List<string>() { "NotValid" }, Status = false };
+            }
+
+            file.Name = NewName;
+            string NewPath = basedir + "\\" + file.Path + "\\" + NewName;
+            try
+            {
+                if (file.IsDirectory)
+                {
+                    ChangePathRecursive(file, file.Path + "\\" + file.Name);
+                    Directory.Move(CompletePath, NewPath);
+                }
+                else
+                {
+                    System.IO.File.Move(CompletePath, NewPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                _context.ChangeTracker.Clear();
+                return new ResponseModel() { Errors = new List<string>() { ex.Message }, Status = false };
+            }
+            try
+            {
+                _context.SaveChanges();
+                
+            }
+            catch (Exception ex)
+            {
+                _context.ChangeTracker.Clear();
+                return new ResponseModel() { Errors = new List<string>() { ex.Message }, Status = false };
+            }
+            return new ResponseModel() { Errors = null, Status = true };
+        }
+        private void ChangePathRecursive(FileElement file, string NewPath)
+        {
+            if (file.IsDirectory)
+            {
+                var items = _context.EleFiles.Where(x => x.Path == file.Path + "\\" + file.Name).ToList();
+                foreach (var item in items)
                 {
                     ChangePathRecursive(item, NewPath + "\\" + item.Name);
                 }
             }
+            file.Path = NewPath;
         }
     }
 }

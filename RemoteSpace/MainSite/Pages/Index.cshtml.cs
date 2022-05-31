@@ -90,6 +90,7 @@ namespace MainSite.Pages
                     return RedirectToPage("/Index", new { spath = path, error = "Not valid" });
                 }
                 Api.Rename(NewName, Id);
+                return RedirectToPage("/Index", new { spath = path });
             }
             if (btn=="Delete")
             {
