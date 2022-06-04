@@ -126,16 +126,22 @@ namespace MainSite.Connect
 
             return true;
         }
-        public static async void  Rename (string newname, int? Id)
+        public static async void Rename(string newname, int? Id)
         {
-            
+
             if (Id == null)
             {
                 throw new NullReferenceException("ID");
             }
-            var response = await Client.PutAsync(_Address + newname + "-"+ Id);
+            var response = await Client.PutAsJsonAsync(_Address, new FileElementRenameRequest { Id=(int)Id, NewName=newname});
 
             response.EnsureSuccessStatusCode();
+            var result= JsonConvert.DeserializeObject<ResponseModel>(await response.Content.ReadAsStringAsync());
+            if (!result.Status)
+            {
+
+                throw new Exception(result.Errors[0]);
+            }
         }
     }
 }

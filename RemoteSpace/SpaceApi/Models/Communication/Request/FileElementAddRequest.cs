@@ -5,6 +5,12 @@
         public FileElementSend FileInfo { get; set; }
         public string Content { get; set; }
     }
+    public class FileElementRenameRequest
+    {
+        public int Id { get; set; }
+        public string NewName { get; set; }
+    }
+
     public class FileElementSend
     {
         public string Name { get; set; }

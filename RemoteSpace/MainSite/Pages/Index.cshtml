@@ -246,7 +246,6 @@
         $('#InputName').each(function () {
             var lable = $(this).attr('ref-id');
             $(this).keydown((e) => {
-                alert(e.key);
                 if (e.key === "Enter") {
                     $('form[ref-id=' + input + ']').submit();
                 }

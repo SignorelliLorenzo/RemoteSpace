@@ -83,7 +83,7 @@ namespace MainSite.Pages
             {
                 return RedirectToPage("/Error", new { Error = "Path not valid" });
             }
-            if(NewName!=null)
+            if(String.IsNullOrEmpty(NewName))
             {
                 if (!Api.Validate(Id, User.Identity.Name).Result)
                 {

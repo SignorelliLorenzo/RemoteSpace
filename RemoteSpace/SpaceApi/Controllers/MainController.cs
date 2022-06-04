@@ -104,6 +104,11 @@ namespace SpaceApi.Controllers
         {
             var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
             FileElement CompleteFile;
+            if (new[] { '\\', '?', ':', '"', '*', '/', '>', '<', '|' }.Any(fileElement.FileInfo.Name.Contains) || _context.EleFiles.Where(x => x.Name == fileElement.FileInfo.Name && x.Path == fileElement.FileInfo.Path).Any())
+            {
+                return new ResponseFiles() { Errors = new List<string>() { "NameNotValid" }, Status = false, Content = null };
+            }
+            
             if (fileElement.FileInfo.IsDirectory)
             {
                 CompleteFile = new FileElement(fileElement.FileInfo, 0, user);
@@ -259,16 +264,16 @@ namespace SpaceApi.Controllers
 
             return new ResponseFiles() { Errors = new List<string>() { }, Content = fileElements, Status = true };
         }
-        [HttpPut("{id}-{NewName}")]
+        [HttpPut]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ResponseModel> Rename(int id, string NewName)
+        public async Task<ResponseModel> Rename(FileElementRenameRequest info)
         {
-            
-            var file = _context.EleFiles.Where(x => x.Id == id).First();
+            var NewName = info.NewName;
+            var file = _context.EleFiles.Where(x => x.Id == info.Id).First();
 
             var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
             string CompletePath = basedir + "\\" + file.Path + "\\" + file.Name;
-            if (NewName.Contains('\\') || _context.EleFiles.Where(x => x.Name == NewName && x.Path== file.Path).Any())
+            if (new[] { '\\', '?', ':', '"', '*','/','>','<','|' }.Any(NewName.Contains) || _context.EleFiles.Where(x => x.Name == NewName && x.Path== file.Path).Any())
             {
                 return new ResponseModel() { Errors = new List<string>() { "NotValid" }, Status = false };
             }
@@ -300,6 +305,7 @@ namespace SpaceApi.Controllers
             catch (Exception ex)
             {
                 _context.ChangeTracker.Clear();
+                System.IO.File.Move(NewPath,CompletePath);
                 return new ResponseModel() { Errors = new List<string>() { ex.Message }, Status = false };
             }
             return new ResponseModel() { Errors = null, Status = true };
