@@ -16,5 +16,6 @@ namespace SpaceApi.Models.Communication.Request
         public string Password { get; set; }
         [Required]
         public bool Admin { get; set; }
+        public long? Space { get; set; }
     }
 }

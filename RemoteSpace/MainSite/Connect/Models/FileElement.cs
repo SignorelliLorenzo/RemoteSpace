@@ -16,7 +16,7 @@ namespace MainSite.Connect.Models
         [Required]
         public string Name { get; set; }
         [Required]
-        public decimal Weight { get; set; }
+        public long Weight { get; set; }
         [Required]
         public string Owner { get; set; }
         [Required]
@@ -99,7 +99,7 @@ namespace MainSite.Connect.Models
         {
             Id = file.Id;
             Name=file.Name;
-            Weight = SizeSuffix((int)file.Weight);
+            Weight = SizeSuffix(file.Weight);
             UploadDate = file.UploadDate;
             Path = file.Path;
             Description = file.Description;

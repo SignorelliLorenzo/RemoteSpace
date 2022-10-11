@@ -143,5 +143,9 @@ namespace MainSite.Connect
                 throw new Exception(result.Errors[0]);
             }
         }
+        public static async void GetSpaceInfo()
+        {
+
+        }
     }
 }

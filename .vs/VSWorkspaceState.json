@@ -4,8 +4,10 @@
     "\\RemoteSpace",
     "\\RemoteSpace\\MainSite",
     "\\RemoteSpace\\MainSite\\Connect",
-    "\\RemoteSpace\\MainSite\\Connect\\Cryptography"
+    "\\RemoteSpace\\MainSite\\Connect\\Cryptography",
+    "\\RemoteSpace\\SpaceApi",
+    "\\RemoteSpace\\SpaceApi\\Controllers"
   ],
-  "SelectedNode": "\\RemoteSpace\\MainSite\\Startup.cs",
+  "SelectedNode": "\\RemoteSpace\\SpaceApi\\Controllers\\MainController.cs",
   "PreviewInSolutionExplorer": false
 }

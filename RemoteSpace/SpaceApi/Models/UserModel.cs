@@ -8,6 +8,7 @@ namespace Api_Pcto.Models
     public class UserModel : IdentityUser
     {
         public bool Admin { get; set; }
+        public long? Space { get; set; }
     }
 }
 

@@ -64,13 +64,29 @@ namespace SpaceApi.Controllers
 
             if (System.IO.File.Exists(completepath))
             {
-                return new ResponseFiles() { Errors = new List<string> { "IsAFile" }, Status = true, Content = _context.EleFiles.Where(x => x.Path == path.Substring(0, path.IndexOf(Path.GetDirectoryName(completepath))) && x.User == user).ToList() };
+                var list = _context.EleFiles.Where(x => x.Path == path.Substring(0, path.IndexOf(Path.GetDirectoryName(completepath))) && x.User == user).ToList();
+                foreach (var item in list)
+                {
+                    if(item.IsDirectory)
+                    {
+                        item.Weight = DirSize(new DirectoryInfo(basedir + "\\" + item.Path));
+                    }
+                }
+                return new ResponseFiles() { Errors = new List<string> { "IsAFile" }, Status = true, Content = list };
 
             }
             else if (System.IO.Directory.Exists(completepath))
             {
-
-                var x = new ResponseFiles() { Errors = null, Status = true, Content = (_context.EleFiles.Where(x => x.Path == path && x.User == user).ToList()) };
+                var list = _context.EleFiles.Where(x => x.Path == path && x.User == user).ToList();
+                foreach (var item in list)
+                {
+                    if (item.IsDirectory)
+                    {
+                        item.Weight = DirSize(new DirectoryInfo(basedir + "\\" + item.Path));
+                    }
+                }
+                var x = new ResponseFiles() { Errors = null, Status = true, Content = list};
+                
                 return x;
             }
             return new ResponseFiles() { Errors = new List<string>() { "NotFound" }, Status = false, Content = null };
@@ -102,7 +118,15 @@ namespace SpaceApi.Controllers
         [DisableRequestSizeLimit]
         public async Task<ResponseFiles> AddFileElement(FileElementAddRequest fileElement)
         {
-            var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
+            var completeuser = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First();
+            var freespace = this.GetFreeSpace().FreeSpace;
+            if(fileElement.Content.Count()>freespace)
+            {
+                return new ResponseFiles() { Errors = new List<string>() { "OutOfSpace" }, Status = false, Content = null };
+            }
+            var user = completeuser.UserName;
+           
+            
             FileElement CompleteFile;
             if (new[] { '\\', '?', ':', '"', '*', '/', '>', '<', '|' }.Any(fileElement.FileInfo.Name.Contains) || _context.EleFiles.Where(x => x.Name == fileElement.FileInfo.Name && x.Path == fileElement.FileInfo.Path).Any())
             {
@@ -223,7 +247,7 @@ namespace SpaceApi.Controllers
             }
             return true;
         }
-        // DELETE: api/Main/5
+       
         [HttpDelete("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ResponseModel> DeleteFileElement(int id)
@@ -321,6 +345,32 @@ namespace SpaceApi.Controllers
                 }
             }
             file.Path = NewPath;
+        }
+        [HttpGet("FreeSpace")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public FreeSpaceResponse GetFreeSpace()
+        {
+            var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First();
+            var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + user.UserName;
+           
+            return (new FreeSpaceResponse() { FreeSpace = (long)user.Space - DirSize(new DirectoryInfo(basedir)), TotalSpace = (new DriveInfo(Directory.GetCurrentDirectory().Substring(0, 1))).AvailableFreeSpace, UserSpace = user.Space });
+        }
+        public static long DirSize(DirectoryInfo d)
+        {
+            long size = 0;
+            // Add file sizes.
+            FileInfo[] fis = d.GetFiles();
+            foreach (FileInfo fi in fis)
+            {
+                size += fi.Length;
+            }
+            // Add subdirectory sizes.
+            DirectoryInfo[] dis = d.GetDirectories();
+            foreach (DirectoryInfo di in dis)
+            {
+                size += DirSize(di);
+            }
+            return size;
         }
     }
 }

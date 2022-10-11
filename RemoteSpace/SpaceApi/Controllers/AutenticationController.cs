@@ -81,7 +81,7 @@ namespace SpaceApi.Controllers
                         Success = false
                     };
                 }
-                var NewUser = new UserModel() { Email = user.Email, UserName = user.Email,Admin=user.Admin };
+                var NewUser = new UserModel() { Email = user.Email, UserName = user.Email,Admin=user.Admin, Space=user.Space };
                 var IsCreated = await _userManager.CreateAsync(NewUser, user.Password);
                 var NewUserToken = new UserTokenRequest()
                 {
