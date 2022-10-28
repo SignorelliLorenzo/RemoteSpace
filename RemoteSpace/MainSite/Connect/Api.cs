@@ -15,14 +15,14 @@ namespace MainSite.Connect
     {
         private static HttpClient Client = new HttpClient();
         private static string _Address;
-        public static void Initialize(string token,string Address)
+        public static void Initialize(string token, string Address)
         {
-            Client.DefaultRequestHeaders.Authorization= new AuthenticationHeaderValue("Bearer", token);
+            Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             _Address = Address;
         }
         public static async Task<byte[]> GetFile(int id)
         {
-            HttpResponseMessage response = await Client.GetAsync(_Address+ "file/"+id);
+            HttpResponseMessage response = await Client.GetAsync(_Address + "file/" + id);
             response.EnsureSuccessStatusCode();
             var result = JsonConvert.DeserializeObject<ResponseFile>(await response.Content.ReadAsStringAsync());
             if (!result.Status)
@@ -32,26 +32,26 @@ namespace MainSite.Connect
 
             return result.Content;
         }
-        public static async Task< List<FileElement>> GetDirFiles(string path)
+        public static async Task<List<FileElement>> GetDirFiles(string path)
         {
-            if(!path.StartsWith("\\"))
+            if (!path.StartsWith("\\"))
             {
                 path = "\\" + path;
             }
-            
-                HttpResponseMessage response = await Client.GetAsync(_Address + "dir/"+path.Replace("\\","_5"));
-                response.EnsureSuccessStatusCode();
-                var result = JsonConvert.DeserializeObject<ResponseFiles>(await response.Content.ReadAsStringAsync());
-                if(!result.Status)
-                {
-                    throw new Exception(result.Errors[0]);
-                }
 
-                return result.Content;
+            HttpResponseMessage response = await Client.GetAsync(_Address + "Dir/" + path.Replace("\\", "%5_"));
+            response.EnsureSuccessStatusCode();
+            var result = JsonConvert.DeserializeObject<ResponseFiles>(await response.Content.ReadAsStringAsync());
+            if (!result.Status)
+            {
+                throw new Exception(result.Errors[0]);
+            }
+
+            return result.Content;
         }
-        public static async Task<bool> AddDir(string name,string path, string Owner)
+        public static async Task<bool> AddDir(string name, string path, string Owner)
         {
-           
+
             if (!path.StartsWith("\\"))
             {
                 path = "\\" + path;
@@ -62,7 +62,7 @@ namespace MainSite.Connect
             List<FileElement> response;
             try
             {
-               response = Api.AddFile(requestdir).Result;
+                response = Api.AddFile(requestdir).Result;
             }
             catch (Exception ex)
             {
@@ -70,7 +70,7 @@ namespace MainSite.Connect
             }
             if (response.Count == 0)
             {
-                
+
             }
             return true;
 
@@ -81,13 +81,13 @@ namespace MainSite.Connect
             {
                 path = "\\" + path;
             }
-            HttpResponseMessage response = await Client.GetAsync(_Address + "PathEx/" + path.Replace("\\", "_5"));
+            HttpResponseMessage response = await Client.GetAsync(_Address + "PathEx/" + path.Replace("\\", "%5_"));
             response.EnsureSuccessStatusCode();
-            return ("true"==response.Content.ReadAsStringAsync().Result);
+            return ("true" == response.Content.ReadAsStringAsync().Result);
         }
         public static async Task<List<FileElement>> AddFile(FileElementAddRequest Request)
         {
-            var response =await Client.PostAsJsonAsync(_Address + "", Request);
+            var response = await Client.PostAsJsonAsync(_Address + "", Request);
             response.EnsureSuccessStatusCode();
             var result = JsonConvert.DeserializeObject<ResponseFiles>(await response.Content.ReadAsStringAsync());
             if (!result.Status)
@@ -95,6 +95,45 @@ namespace MainSite.Connect
                 throw new Exception(result.Errors[0]);
             }
             return result.Content;
+        }
+        public static async Task<Dictionary<string, long>> GetDirSizes(List<string> Paths)
+        {
+            Dictionary<string, long> Result = new Dictionary<string, long>();
+            string temp = "";
+            HttpResponseMessage request = null;
+            List<string> Errors=new List<string>();
+            DirSizeResponse response = null;
+            foreach (var Path in Paths)
+            {
+                temp = Path;
+                if (!temp.StartsWith("\\"))
+                {
+                    temp = "\\" + temp;
+                }
+                temp = temp.Replace("\\", "%5_");
+
+                request= await Client.GetAsync(_Address + "Dirsize/"+temp);
+                request.EnsureSuccessStatusCode();
+                response=JsonConvert.DeserializeObject<DirSizeResponse>(await request.Content.ReadAsStringAsync());
+                if (!response.Status)
+                {
+                    Errors.AddRange(response.Errors);
+
+                }
+                else
+                {
+                    Result[Path] = response.Weight;
+                    
+                }
+                request.Dispose();
+                request = null;
+            }
+            if(Errors.Count()!=0)
+            {
+                throw new Exception(String.Join("\n|=|", Errors));
+            }
+            
+            return Result;
         }
         public static async Task<bool> Validate(int? id, string owner)
         {

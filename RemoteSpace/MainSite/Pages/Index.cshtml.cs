@@ -18,11 +18,11 @@ namespace MainSite.Pages
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<BaseUser> _userManager;
         public string path;
         public string OldPath;
         public string Error;
-        public IndexModel(ILogger<IndexModel> logger, UserManager<IdentityUser> userManager)
+        public IndexModel(ILogger<IndexModel> logger, UserManager<BaseUser> userManager)
         {
             _logger = logger;
             _userManager = userManager;
@@ -83,15 +83,7 @@ namespace MainSite.Pages
             {
                 return RedirectToPage("/Error", new { Error = "Path not valid" });
             }
-            if(String.IsNullOrEmpty(NewName))
-            {
-                if (!Api.Validate(Id, User.Identity.Name).Result)
-                {
-                    return RedirectToPage("/Index", new { spath = path, error = "Not valid" });
-                }
-                Api.Rename(NewName, Id);
-                return RedirectToPage("/Index", new { spath = path });
-            }
+           
             if (btn=="Delete")
             {
                 if (!Api.Validate(Id, User.Identity.Name).Result)
@@ -126,25 +118,39 @@ namespace MainSite.Pages
             if(string.IsNullOrWhiteSpace(DirName) || DirName.Contains("\\"))
             {
                 return RedirectToPage("/Index", new { spath = path });
-            }    
-            try
+            }
+            if(btn=="NewDir")
             {
-                if (!Api.CheckPath("\\" + User.Identity.Name).Result)
+                try
                 {
-                    if (!Api.AddDir(User.Identity.Name, "", User.Identity.Name).Result)
+                    if (!Api.CheckPath("\\" + User.Identity.Name).Result)
                     {
-                        return RedirectToPage("/Error", new { Error = "Failed to create root dir" });
+                        if (!Api.AddDir(User.Identity.Name, "", User.Identity.Name).Result)
+                        {
+                            return RedirectToPage("/Error", new { Error = "Failed to create root dir" });
+                        }
+                    }
+                    if (!Api.AddDir(DirName, path, User.Identity.Name).Result)
+                    {
+                        return RedirectToPage("/Index", new { spath = path, error = "Failed to create dir" });
                     }
                 }
-                if (!Api.AddDir(DirName,path, User.Identity.Name).Result)
+                catch (Exception ex)
                 {
-                    return RedirectToPage("/Index", new { spath = path, error = "Failed to create dir" });
+                    return RedirectToPage("/Error", new { Error = ex.Message });
                 }
             }
-            catch (Exception ex)
+            if (!String.IsNullOrEmpty(NewName))
             {
-                return RedirectToPage("/Error", new { Error = ex.Message });
+                if (!Api.Validate(Id, User.Identity.Name).Result)
+                {
+                    return RedirectToPage("/Index", new { spath = path, error = "Not valid" });
+                }
+                Api.Rename(NewName, Id);
+                return RedirectToPage("/Index", new { spath = path });
             }
+
+
             return RedirectToPage("/Index", new {spath=path});
         }
         

@@ -43,8 +43,9 @@ namespace SpaceApi.Controllers
         public async Task<ActionResult<UserRegistrationResponse>> Register(UserRegistrationRequest user)
 
         {
-      
-            if (!_userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().Admin)
+
+
+            if (!_userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().Admin )
             {
                 return new UserRegistrationResponse()
                 {

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MainSite.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<BaseUser>
     {
         public ApplicationDbContext(DbContextOptions options)
             : base(options)

@@ -1,4 +1,16 @@
 ﻿@page
 @model MainSite.Pages.Main.AdminCPModel
+@inject UserManager<BaseUser> UserManager
+@inject SignInManager<BaseUser> SignInManager
 @{
+}
+
+@foreach (var user in UserManager.Users)
+{
+    <div>
+        <P>@user.Email</P>
+        <div class="progress" title="@user.Email">
+            <div class="progress-bar" role="progressbar" style="width: @(@Model.UserSpace[user.Email]/100*@user.Space)%;" aria-valuenow=@Model.UserSpace[user.Email] aria-valuemin="0" aria-valuemax=@user.Space></div>
+        </div>
+    </div>
 }

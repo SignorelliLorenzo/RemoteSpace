@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using MainSite.Connect;
 using MainSite.Connect.Cryptography;
 using MainSite.Data;
 using Microsoft.AspNetCore.Authentication;
@@ -23,14 +24,14 @@ namespace MainSite.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<BaseUser> _signInManager;
+        private readonly UserManager<BaseUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
+            UserManager<BaseUser> userManager,
+            SignInManager<BaseUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
@@ -79,7 +80,7 @@ namespace MainSite.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
               
-                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email};
+                var user = new BaseUser { UserName = Input.Email, Email = Input.Email, Admin=_userManager.Users.Where(x=>x.Admin).Count()==0,Space=1000};
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

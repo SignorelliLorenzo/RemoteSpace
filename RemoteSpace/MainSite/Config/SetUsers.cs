@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using MainSite.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace MainSite.Config
     {
         public static void Initialize(IServiceProvider Provider)
         {
-            var userManager = Provider.GetRequiredService<UserManager<IdentityUser>>();
+            var userManager = Provider.GetRequiredService<UserManager<BaseUser>>();
             foreach(var user in userManager.Users)
             {
                 userManager.UpdateSecurityStampAsync(user);

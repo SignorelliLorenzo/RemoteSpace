@@ -4,6 +4,5 @@
     {
         public long FreeSpace { get; set; }
         public long? UserSpace { get; set; }
-        public long TotalSpace { get; set; }
     }
 }

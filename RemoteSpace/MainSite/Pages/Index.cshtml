@@ -12,7 +12,7 @@
         <div class="col" style="padding-left:1px"><input type="text" asp-for="path" name="DirName" class="form-control" readonly /></div>
         <div class="col-xs-auto " style="text-align: right;">
             <form asp-page="Main/Addfile" method="get">
-                <input type="image" src="/Img/fileadd.png" width="40" height="40" value="Add file" />
+                <input type="image" src="/Img/fileadd.png" width="40" height="40" value="AddFile" name="btn" />
                 <input type="hidden" value=@Model.path name="path" />
             </form>
         </div>
@@ -20,10 +20,11 @@
         <div class="col-md-auto form-group" style="margin-left:10px;padding-right:1px">
             <form method="post">
                 <div class="row">
-                    <div class="col-xs-auto"><input type="image" src="/Img/folderadd.png" width="40" height="40" value="New dir" /></div>
+                    <div class="col-xs-auto"><input type="image" src="/Img/folderadd.png" width="40" height="40" value="NewDir" /></div>
                     <div class="col"><input type="text" name="DirName" class="form-control" placeholder="Directory name" /></div>
                 </div>
                 <input type="hidden" value=@Model.path name="path" />
+                <input type="hidden" value="NewDir" name="btn" />
 
             </form>
         </div>

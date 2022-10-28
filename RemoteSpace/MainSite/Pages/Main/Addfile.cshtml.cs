@@ -28,8 +28,8 @@ namespace MainSite.Pages.Main
     [Authorize]
     public class AddfileModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _UserManager;
-        public AddfileModel(UserManager<IdentityUser> userManager)
+        private readonly UserManager<BaseUser> _UserManager;
+        public AddfileModel(UserManager<BaseUser> userManager)
         {
             _UserManager = userManager;
         }
@@ -70,12 +70,12 @@ namespace MainSite.Pages.Main
                 var response = Api.AddFile(request).Result;
                 if(response.Count==0)
                 {
-                    RedirectToPage("../Error", new { Error = "Service unavailable" });
+                    return RedirectToPage("../Error", new { Error = "Service unavailable" });
                 }
             }
             catch(Exception ex)
             {
-                RedirectToPage("../Error", new { Error = ex.Message });
+                return RedirectToPage("../Error", new { Error = ex.Message });
             }
             return RedirectToPage("../Index", new { spath = path });
         }

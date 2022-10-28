@@ -15,6 +15,7 @@ using System.IO;
 using Microsoft.AspNetCore.Identity;
 using Api_Pcto.Models;
 using SpaceApi.Models.Communication.Request;
+using SpaceApi.Models.Communication.Response;
 
 namespace SpaceApi.Controllers
 {
@@ -34,7 +35,7 @@ namespace SpaceApi.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<bool> PathExists(string path)
         {
-            path = path.Replace("_5", "\\");
+            path = path.Replace("%5_", "\\");
             var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
             var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
             if (!path.StartsWith('\\'))
@@ -53,11 +54,15 @@ namespace SpaceApi.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ResponseFiles> GetDir(string path)
         {
-            path = path.Replace("_5", "\\");
+            path = path.Replace("%5_", "\\");
             var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
             if (!path.StartsWith('\\'))
             {
                 path = "\\" + path;
+            }
+            if (!Directory.Exists(basedir))
+            {
+                Directory.CreateDirectory(basedir);
             }
             var completepath = basedir + path.Trim();
             var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
@@ -67,7 +72,7 @@ namespace SpaceApi.Controllers
                 var list = _context.EleFiles.Where(x => x.Path == path.Substring(0, path.IndexOf(Path.GetDirectoryName(completepath))) && x.User == user).ToList();
                 foreach (var item in list)
                 {
-                    if(item.IsDirectory)
+                    if (item.IsDirectory)
                     {
                         item.Weight = DirSize(new DirectoryInfo(basedir + "\\" + item.Path));
                     }
@@ -85,8 +90,8 @@ namespace SpaceApi.Controllers
                         item.Weight = DirSize(new DirectoryInfo(basedir + "\\" + item.Path));
                     }
                 }
-                var x = new ResponseFiles() { Errors = null, Status = true, Content = list};
-                
+                var x = new ResponseFiles() { Errors = null, Status = true, Content = list };
+
                 return x;
             }
             return new ResponseFiles() { Errors = new List<string>() { "NotFound" }, Status = false, Content = null };
@@ -119,27 +124,30 @@ namespace SpaceApi.Controllers
         public async Task<ResponseFiles> AddFileElement(FileElementAddRequest fileElement)
         {
             var completeuser = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First();
+          
             var freespace = this.GetFreeSpace().FreeSpace;
-            if(fileElement.Content.Count()>freespace)
+            if (fileElement.Content != null && fileElement.Content.Count() > freespace)
             {
                 return new ResponseFiles() { Errors = new List<string>() { "OutOfSpace" }, Status = false, Content = null };
             }
             var user = completeuser.UserName;
-           
-            
+            byte[] FileData = null;
+
+
             FileElement CompleteFile;
             if (new[] { '\\', '?', ':', '"', '*', '/', '>', '<', '|' }.Any(fileElement.FileInfo.Name.Contains) || _context.EleFiles.Where(x => x.Name == fileElement.FileInfo.Name && x.Path == fileElement.FileInfo.Path).Any())
             {
                 return new ResponseFiles() { Errors = new List<string>() { "NameNotValid" }, Status = false, Content = null };
             }
-            
+
             if (fileElement.FileInfo.IsDirectory)
             {
                 CompleteFile = new FileElement(fileElement.FileInfo, 0, user);
             }
             else
             {
-                CompleteFile = new FileElement(fileElement.FileInfo, fileElement.Content.Count(), user);
+                FileData = Convert.FromBase64String(fileElement.Content);
+                CompleteFile = new FileElement(fileElement.FileInfo, FileData.Count(), user);
             }
             var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
             if (!System.IO.Directory.Exists(basedir))
@@ -181,7 +189,7 @@ namespace SpaceApi.Controllers
             else
             {
                 var newfile = System.IO.File.Create(completepath);
-                newfile.Write(Convert.FromBase64String(fileElement.Content));
+                newfile.Write(FileData);
                 newfile.Close();
             }
             try
@@ -247,7 +255,7 @@ namespace SpaceApi.Controllers
             }
             return true;
         }
-       
+
         [HttpDelete("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ResponseModel> DeleteFileElement(int id)
@@ -297,7 +305,7 @@ namespace SpaceApi.Controllers
 
             var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First().UserName;
             string CompletePath = basedir + "\\" + file.Path + "\\" + file.Name;
-            if (new[] { '\\', '?', ':', '"', '*','/','>','<','|' }.Any(NewName.Contains) || _context.EleFiles.Where(x => x.Name == NewName && x.Path== file.Path).Any())
+            if (new[] { '\\', '?', ':', '"', '*', '/', '>', '<', '|' }.Any(NewName.Contains) || _context.EleFiles.Where(x => x.Name == NewName && x.Path == file.Path).Any())
             {
                 return new ResponseModel() { Errors = new List<string>() { "NotValid" }, Status = false };
             }
@@ -324,12 +332,12 @@ namespace SpaceApi.Controllers
             try
             {
                 _context.SaveChanges();
-                
+
             }
             catch (Exception ex)
             {
                 _context.ChangeTracker.Clear();
-                System.IO.File.Move(NewPath,CompletePath);
+                System.IO.File.Move(NewPath, CompletePath);
                 return new ResponseModel() { Errors = new List<string>() { ex.Message }, Status = false };
             }
             return new ResponseModel() { Errors = null, Status = true };
@@ -351,9 +359,45 @@ namespace SpaceApi.Controllers
         public FreeSpaceResponse GetFreeSpace()
         {
             var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First();
+            if (user == null)
+            {
+                return (new FreeSpaceResponse() { Errors = new List<string>() { "Not Authorized" }, Status = false });
+            }
+            else if (user.Space == null)
+            {
+                return (new FreeSpaceResponse() { Errors = new List<string>() { "SpaceNotAssigned" }, Status = false });
+            }
             var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + user.UserName;
-           
-            return (new FreeSpaceResponse() { FreeSpace = (long)user.Space - DirSize(new DirectoryInfo(basedir)), TotalSpace = (new DriveInfo(Directory.GetCurrentDirectory().Substring(0, 1))).AvailableFreeSpace, UserSpace = user.Space });
+
+            var currentdisk = new DriveInfo(Directory.GetCurrentDirectory().Substring(0, 1));
+            var freespace = currentdisk.AvailableFreeSpace - currentdisk.TotalSize * 85 / 100;
+            if (freespace < 0)
+            {
+                return (new FreeSpaceResponse() { Errors = new List<string>() { "NoFreeSpace" }, Status = false });
+            }
+            if(user.Space==0)
+            {
+                return (new FreeSpaceResponse() { FreeSpace = freespace, UserSpace = currentdisk.TotalSize });
+
+            }
+            return (new FreeSpaceResponse() { FreeSpace = (long)user.Space - DirSize(new DirectoryInfo(basedir)), UserSpace = user.Space });
+        }
+        [HttpGet("DirSize/{path}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public DirSizeResponse GetDirSize(string path)
+        {
+            path = path.Replace("%5_", "\\");
+            var user = _userManager.Users.Where(x => x.Email == _userManager.GetUserId(User)).First();
+            if (user == null)
+            {
+                return (new DirSizeResponse() { Errors = new List<string>() { "NotAuthorized" }, Status = false });
+            }
+            var basedir = Environment.GetEnvironmentVariable("MainPath") + "\\" + user.UserName;
+            if(!Directory.Exists(basedir + path))
+            {
+                return new DirSizeResponse() { Status = false, Errors = new List<string>() {"NotFound"} };
+            }
+            return new DirSizeResponse() { Status = true, Weight = DirSize(new DirectoryInfo(basedir + path)) };
         }
         public static long DirSize(DirectoryInfo d)
         {
